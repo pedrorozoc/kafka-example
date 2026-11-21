@@ -1,6 +1,6 @@
 # Validar el ciclo de reserva por HTTP
 
-Esta guía describe la ejecución prevista una vez implementado el plan. Usar Java 25, el Maven Wrapper del proyecto, Docker, Bash, curl y jq. Los comandos parten de la raíz del repositorio. El ejemplo usa una base desechable exclusiva para la prueba y una sola mesa de cuatro plazas.
+Esta guía valida el ciclo de reserva con FR-013 implementado. Usar Java 25, el Maven Wrapper del proyecto, Docker, Bash, curl y jq. Los comandos parten de la raíz del repositorio. El ejemplo usa una base desechable exclusiva para la prueba. El catálogo comienza con una mesa de cuatro plazas.
 
 El [contrato HTTP](contracts/openapi.yaml) define las respuestas y los códigos de error. El [modelo de datos](data-model.md) define qué asignaciones comprobar en PostgreSQL.
 
@@ -71,7 +71,7 @@ wait "$first_pid" && wait "$second_pid"
 jq -se '([.[].status] | sort) == ["CONFIRMED","REJECTED"] and ([.[].reservationCode] | unique | length) == 2' "$results/a" "$results/b"
 ```
 
-### Suite de aceptación y cierre
+### Consultar un resultado definitivo
 
 Después de probar la concurrencia, añadir una mesa para que la solicitud previamente rechazada tenga ahora capacidad disponible. Consultar dos veces los dos códigos originales debe seguir devolviendo 200 y la decisión recibida al crearlos.
 
@@ -84,19 +84,57 @@ for result in "$first" "$second" "$first" "$second"; do
   curl -fsS "$url/$code" | jq -e --arg expected "$expected" '. == {status:$expected}'
 done
 post '2030-06-16T19:00:00Z' 6 | jq -e '.status == "REJECTED"'
-post '2030-06-16T19:00:00Z' 2147483648 | jq -e '.status == "REJECTED"'
 curl -si "$url/codigo-desconocido"
 ```
 
-Los dos POST devuelven 201. Las mesas de cuatro plazas siguen libres, incluso cuando la capacidad total alcanza para seis personas. El último GET devuelve 404 con el problema en español.
+El POST devuelve 201. Las mesas de cuatro plazas siguen libres, incluso cuando la capacidad total alcanza para seis personas. El último GET devuelve 404 con el problema en español.
+
+### Validar el máximo de 12 comensales
+
+Con las mesas actuales, un grupo de 12 recibe `201 REJECTED`. Añade una mesa de 13 plazas y envía una solicitud de 13 para la misma franja. Debe devolver 400 en formato `application/problem+json`, con título y detalle en español, sin `Location` ni fila nueva. En la misma franja, un grupo de 12 debe recibir `201 CONFIRMED` con la nueva mesa.
+
+```bash
+(
+  set -euo pipefail
+  slot='2030-06-17T19:00:00Z'
+  post "$slot" 12 | jq -e '.status == "REJECTED"'
+  docker exec bistro-reservation-check psql -U bistro -d bistro -v ON_ERROR_STOP=1 \
+    -c 'INSERT INTO dining_table (id, capacity) VALUES (3, 13)'
+  count_reservations() {
+    docker exec bistro-reservation-check psql -U bistro -d bistro -At \
+      -c 'SELECT count(*) FROM reservation'
+  }
+  before=$(count_reservations)
+  for size in 13 2147483648; do
+    post "$slot" "$size" 2>"$results/invalid-size.headers" | jq -e '
+      .status == 400 and .title == "Solicitud inválida"
+      and .detail == "La cantidad de comensales no puede superar las 12 personas."
+      and (has("reservationCode") | not)'
+    grep -Eq '^HTTP/[^ ]+ 400' "$results/invalid-size.headers"
+    grep -Eiq '^content-type: application/problem\+json' "$results/invalid-size.headers"
+    if grep -Eiq '^location:' "$results/invalid-size.headers"; then
+      printf '%s\n' 'La respuesta 400 no debe incluir Location.' >&2
+      exit 1
+    fi
+    test "$before" = "$(count_reservations)"
+  done
+  post "$slot" 12 | jq -e '.status == "CONFIRMED"'
+  docker exec bistro-reservation-check psql -U bistro -d bistro -At \
+    -c "SELECT assigned_table_id FROM reservation WHERE reservation_time = '$slot' AND status = 'CONFIRMED'" \
+    | grep -qx '3'
+)
+```
+
+### Suite de aceptación y cierre
 
 ```bash
 ./mvnw verify
 ```
 
-Las pruebas de integración previstas usarán PostgreSQL de Testcontainers con fixtures aisladas y cubrirán ambas historias de la [especificación](spec.md).
+Las pruebas de integración usan PostgreSQL de Testcontainers y fixtures aisladas. También se pueden ejecutar con `BISTRO_TEST_DATABASE_URL`, `BISTRO_TEST_DATABASE_USERNAME` y `BISTRO_TEST_DATABASE_PASSWORD` apuntando a una base exclusiva de pruebas. La suite vacía las tablas de reservas y mesas al preparar cada caso.
 
 - Para cada campo obligatorio, omitirlo y enviarlo como `null`. Probar también nombre en blanco, email inválido, hora ilegible o sin desplazamiento, cantidad negativa, fraccionaria o enviada como cadena. Para cada entrada inválida, verificar 400 en español y el mismo número de reservas y asignaciones antes y después.
+- Probar los límites 1, 12 y 13. Conservar el tratamiento de números JSON de valor entero, incluido `12.0`, y comprobar 400 para `13.0` y los enteros grandes que antes se guardaban. Una prueba MVC debe verificar que el servicio de creación recibe cero llamadas al enviar 13. Una reserva histórica superior a 12, preparada en la base de pruebas, debe seguir devolviendo su estado al consultarla por código.
 - Probar catálogo vacío, una mesa ocupada y otra apta libre, offsets equivalentes y cruce de medianoche. Una reserva a las 23:30 debe impedir otra a las 00:30 y permitirla a la 01:00 del día siguiente con la misma mesa.
 - Coordinar dos conexiones independientes en el punto de bloqueo, con una sola mesa apta. Comprobar que la segunda lee la decisión de la primera después del commit. Simular además un fallo de escritura y verificar que el rollback deja la mesa disponible.
 

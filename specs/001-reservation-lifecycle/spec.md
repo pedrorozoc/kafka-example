@@ -29,6 +29,8 @@ Como cliente, quiero enviar mis datos y los de mi visita para saber, en la respu
 
 7. **Given** que la única mesa apta está asignada de 19:00 a 20:30, **When** se solicita para las 20:00 de la misma fecha, **Then** se devuelve `REJECTED` por superposición, aunque las horas de inicio sean distintas.
 8. **Given** que la única mesa apta está asignada de 19:00 a 20:30, **When** se solicita para las 20:30 de la misma fecha, **Then** se devuelve `CONFIRMED` con esa mesa porque los intervalos son adyacentes.
+9. **Given** una solicitud cuya cantidad de comensales supera las 12 personas, **When** el cliente la envía, **Then** el sisema la rechaza por validación de entrada y no crea la reserva ni evalúa disponibilidad de mesas.
+
 
 ---
 
@@ -74,6 +76,7 @@ Como cliente, quiero consultar el estado de mi reserva usando el código recibid
 - **FR-010**: El cliente DEBE poder obtener el estado mediante el código, sin email ni datos adicionales. Un código inexistente DEBE producir un error de reserva no encontrada.
 - **FR-011**: La feature DEBE exponer los dos casos de uso HTTP definidos abajo, bajo `/api/v1/`, y ser verificable por HTTP sin interfaz gráfica.
 - **FR-012**: Los mensajes al cliente DEBEN estar en español. Los errores de validación y reserva no encontrada DEBEN seguir el formato uniforme de errores del proyecto; `REJECTED` pertenece a la respuesta exitosa.
+- **FR-013**: El sistema DEBE rechazar por validación de entrada toda solicitud cuya cantidad de comensales supere las 12 personas, sin crear la reserva ni evaluar disponibilidad de mesas. Este límite es una validación de entrada (solicitud inválida), distinta del rechazo de negocio (`REJECTED`): El `REJECTED` aplica a solicitudes válidas para las que no hay mesa disponible.
 
 ### Contrato HTTP solicitado
 

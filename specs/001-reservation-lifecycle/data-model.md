@@ -10,11 +10,13 @@
 | customerName | customer_name | Texto obligatorio con al menos un carácter distinto de espacio |
 | customerEmail | customer_email | Texto obligatorio, no vacío y con formato de email |
 | reservationTime | reservation_time | Instante obligatorio, `timestamptz`. El DTO recibe fecha y hora con desplazamiento explícito. |
-| partySize | party_size | Entero positivo obligatorio. `BigInteger` en Java y `numeric` en PostgreSQL, con restricciones de integralidad y positividad. |
+| partySize | party_size | Entero positivo obligatorio. La solicitud HTTP exige de 1 a 12 inclusive. Se conserva `BigInteger` en Java y `numeric` en PostgreSQL para admitir la lectura de registros históricos. |
 | status | status | Texto obligatorio restringido a PENDING, CONFIRMED o REJECTED |
 | assignedTableId | assigned_table_id | ID numérico opcional que referencia una mesa existente. Presente exactamente cuando el estado es CONFIRMED. |
 
-El DTO exige `@NotBlank` en nombre y email, `@Email` en email, `@NotNull` en la hora y `@NotNull @Positive` en la cantidad. La lectura del JSON exige el tipo declarado y una cantidad numérica de valor entero. Una cantidad superior a la capacidad de todas las mesas sigue siendo válida. Reforzar en la base la unicidad del código, nulabilidad, cantidad positiva e integral, valores de estado y equivalencia entre confirmación y mesa asignada. Indexar las reservas confirmadas por mesa y hora para buscar ocupaciones.
+El DTO exige `@NotBlank` en nombre y email, `@Email` en email, `@NotNull` en la hora y `@NotNull @Positive @Max(12)` en la cantidad. El lector JSON admite números de valor entero, incluidas representaciones como `12.0` y `1.2e1`. El controlador valida antes de llamar al servicio. Una cantidad que supera 12 produce HTTP 400 y la solicitud termina antes de crear una reserva o consultar el catálogo. Una cantidad que cumple el rango y supera la capacidad de todas las mesas produce `REJECTED`.
+
+El esquema existente exige unicidad del código, nulabilidad conforme al modelo, cantidad positiva e integral, valores de estado válidos y equivalencia entre confirmación y mesa asignada. El índice por mesa y hora cubre las reservas confirmadas. El límite de entrada deja consultables los registros históricos de más de 12 y sus asignaciones confirmadas siguen ocupando la mesa durante la franja correspondiente.
 
 ## Mesa y franja
 
