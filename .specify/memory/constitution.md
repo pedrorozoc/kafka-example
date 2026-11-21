@@ -13,11 +13,19 @@ Secciones eliminadas: ninguna. Pendientes: ninguno.
 
 ### I. Calidad del código y separación por capas
 
-El código debe aplicar SOLID y prácticas de código limpio. Cada clase debe tener una
-responsabilidad identificable y cada método debe expresar su propósito mediante su nombre.
-Dentro de cada módulo, la capa `controller` debe gestionar el intercambio HTTP, la capa
-`service` debe coordinar los casos de uso y la capa `repository` debe encapsular el acceso
-a los datos. Los controladores deben delegar las operaciones de negocio en los servicios.
+
+El código debe aplicar SOLID y prácticas de código limpio. La separación de responsabilidades debe seguir un patrón de capas por módulo. 
+
+**Estructura de paquetes DENTRO de cada módulo: exactamente** `controller`, `service`, `repository` y `model`. Cada uno con una única responsabilidad:
+- `controller`: adaptadores de entrada HTTP (controllers), DTOs de request/response y mappers MapStruct.
+- `service`: lógica de negocio y orquestación.
+- `repository`: interfaces de acceso a datos (Spring Data)
+- `model`: entidades JPA y enums de dominio.
+
+NO usar capas o paquetes `domain`, `application`, `api`, `infrastructure` ni capas de arquitectura hexagonal.   
+
+El manejo global de excepciones debe implementarse con @RestControllerAdvice y ProblemDetail (RFC 7807). La validación de entrada debe realizarse con Bean Validation en los DTOs.
+
 
 ### II. Monolito modular
 
@@ -73,4 +81,4 @@ La versión sigue el esquema `MAJOR.MINOR.PATCH`. Se incrementa `MAJOR` al elimi
 principio o redefinirlo de forma incompatible, `MINOR` al añadir un principio o ampliar
 sustancialmente su alcance y `PATCH` al aclarar la redacción sin cambiar las obligaciones.
 
-**Version**: 1.0.0 | **Ratified**: 2026-11-20 | **Last Amended**: 2026-11-20
+**Version**: 1.2.0 | **Ratified**: 2026-11-20 | **Last Amended**: 2026-11-20

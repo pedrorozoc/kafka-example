@@ -1,0 +1,20 @@
+# Decisiones de diseño
+
+El repositorio parte de una especificación y una constitución. Estas elecciones establecen la base técnica para implementar la primera feature.
+
+| Decisión | Fundamento | Alternativa considerada |
+| --- | --- | --- |
+| Java 21, Spring Boot 4.2.0 y Maven Wrapper 3.9.x | Spring MVC, Data JPA y Bean Validation cubren las capas y contratos de la constitución. El BOM de Boot coordina las dependencias. MapStruct 1.6.3 y su procesador de igual versión generan mappers con el modelo de componentes de Spring. | Gradle también es compatible. Se elige un único sistema de construcción reproducible. |
+| Mantener cuatro capas por módulo y publicar `TableCatalog` en `tables.service` | La constitución 1.2.0 ubica los DTOs y mappers en `controller` y las entidades y enums en `model`. La interfaz permite a reservas pedir candidatas en la transacción abierta conservando la propiedad del catálogo en mesas. | Los paquetes independientes para DTOs, mappers o interfaces públicas del borrador anterior incumplían el principio I. |
+| Recibir `partySize` como entero positivo de precisión arbitraria y conservarlo en una columna `numeric` | FR-002 admite grupos mayores que la capacidad máxima. Una solicitud válida de ese tipo obtiene un código y estado REJECTED. | Un entero de 32 bits podría convertir ese resultado de negocio en un error de conversión. |
+| PostgreSQL 17, migraciones Flyway y PostgreSQL real en pruebas con Testcontainers | La verificación de exclusión entre solicitudes depende de la semántica de transacciones del motor que ejecutará el servicio. | Un doble en memoria sirve para pruebas unitarias pero no demuestra la visibilidad tras una espera por bloqueo. |
+| Bloquear las mesas candidatas en orden de ID, luego consultar las ocupaciones en una sentencia distinta bajo READ COMMITTED | El bloqueo dura hasta el commit. La consulta posterior ve las reservas confirmadas durante la espera. Bloquear varias candidatas simplifica la decisión para el catálogo de un único restaurante, a costa de hacer esperar incluso a solicitudes de franjas distintas. | Consultar disponibilidad antes de bloquear permite una doble asignación. Saltar filas bloqueadas puede rechazar una solicitud para una franja libre. |
+| Recibir fecha y hora con desplazamiento UTC explícito y comparar instantes | Dos representaciones del mismo instante compiten por la misma mesa. Sumar 90 minutos al instante inicial conserva la duración al cruzar medianoche o cambiar la hora civil. | Una fecha local sin desplazamiento exigiría definir la zona del restaurante y resolver horas locales ambiguas. |
+| Código público UUID aleatorio, respuesta 201 con Location para ambos resultados finales | Cada solicitud válida crea una reserva consultable, incluso cuando el restaurante carece de una mesa apta. GET requiere únicamente el código y devuelve el estado. | Responder con un error por falta de mesa perdería la distinción entre rechazo de negocio y error de entrada. |
+| ProblemDetail para errores, con título y detalle en español | El advice global aplica el contrato de la constitución también a JSON ilegible y a fallos de conversión. | Respuestas de error diferentes por controlador obligarían al cliente a interpretar varios formatos. |
+
+### Referencias
+
+- Compatibilidad de Java y Maven y configuración del procesador de anotaciones. [Spring Boot](https://docs.spring.io/spring-boot/system-requirements.html) · [MapStruct](https://mapstruct.org/documentation/stable/reference/html/)
+- Visibilidad por sentencia y duración de los bloqueos. [Aislamiento en PostgreSQL 17](https://www.postgresql.org/docs/17/transaction-iso.html) · [Bloqueos de filas](https://www.postgresql.org/docs/17/explicit-locking.html#LOCKING-ROWS)
+- Representación de fecha y hora, recurso creado y respuestas de error. [RFC 3339](https://www.rfc-editor.org/rfc/rfc3339#section-5.6) · [HTTP 201](https://www.rfc-editor.org/rfc/rfc9110#section-15.3.2) · [Errores en Spring MVC](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-ann-rest-exceptions.html)
