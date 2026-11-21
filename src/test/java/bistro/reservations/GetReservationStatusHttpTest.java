@@ -28,6 +28,16 @@ class GetReservationStatusHttpTest extends ReservationTestDatabase {
         assertThat(reservations()).isEqualTo(before);
     }
 
+    @Test
+    void readsHistoricalReservationAboveCreationLimitWithoutChangingItsAssignment() {
+        table(1, 13);
+        UUID historical = seed("CONFIRMED", 1L, 13);
+        var before = reservations();
+
+        assertStatus(historical, "CONFIRMED");
+        assertThat(reservations()).isEqualTo(before);
+    }
+
     @ParameterizedTest
     @ValueSource(strings = {"00000000-0000-0000-0000-000000000000", "codigo-desconocido", "1-1-1-1-1"})
     void returnsSpanishNotFoundForMissingAndMalformedCodes(String code) {

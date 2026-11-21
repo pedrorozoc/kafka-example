@@ -1,6 +1,7 @@
 package bistro.reservations.controller;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -25,6 +26,7 @@ public record CreateReservationRequest(
 
         @NotNull(message = "La cantidad de comensales es obligatoria.")
         @Positive(message = "La cantidad de comensales debe ser un entero positivo.")
+        @Max(value = 12, message = "La cantidad de comensales no puede superar las 12 personas.")
         @JsonDeserialize(using = ReservationRequestJsonConfiguration.PartySize.class)
         BigInteger partySize
 ) {

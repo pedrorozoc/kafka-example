@@ -52,26 +52,26 @@ class CreateReservationHttpTest extends ReservationTestDatabase {
     }
 
     @Test
-    void neverCombinesTablesAndAcceptsIntegersAbove32Bits() {
+    void rejectsValidGroupsWithoutOneSufficientlyLargeTable() {
         table(1, 4);
         table(2, 4);
 
         Created combined = created(START, "6");
-        Created large = created(START, "2147483648");
+        Created maximum = created(START, "12");
         assertThat(combined.status()).isEqualTo("REJECTED");
-        assertThat(large.status()).isEqualTo("REJECTED");
+        assertThat(maximum.status()).isEqualTo("REJECTED");
         assertThat(reservations()).containsExactlyInAnyOrder(
-                stored(combined, null, "6"), stored(large, null, "2147483648"));
+                stored(combined, null, "6"), stored(maximum, null, "12"));
     }
 
-    @Test
-    void acceptsJsonNumbersWithIntegerValue() {
-        table(1, 4);
-        Created integral = created(START, "4.0");
-        Created exponential = created("2030-06-13T01:30:00Z", "4e0");
-        assertThat(integral.status()).isEqualTo("CONFIRMED");
-        assertThat(exponential.status()).isEqualTo("CONFIRMED");
-        assertThat(reservations()).allSatisfy(row -> assertThat(row.size()).isEqualTo(BigInteger.valueOf(4)));
+    @ParameterizedTest
+    @ValueSource(strings = {"1", "12", "12.0", "1.2e1"})
+    void confirmsValidBoundarySizesIncludingEquivalentJsonNumbers(String size) {
+        table(1, 12);
+        Created result = created(START, size);
+        assertThat(result.status()).isEqualTo("CONFIRMED");
+        String storedSize = size.equals("1") ? "1" : "12";
+        assertThat(reservations()).containsExactly(stored(result, 1L, storedSize));
     }
 
     @Test
@@ -95,12 +95,24 @@ class CreateReservationHttpTest extends ReservationTestDatabase {
                 .satisfies(row -> assertThat(row.time()).isEqualTo(OffsetDateTime.parse("2030-06-13T00:00:00.000001Z")));
     }
 
-    @Test
-    void persistsIntegersBeyondTheDefaultJsonNumberLength() {
-        String size = "1" + "0".repeat(1100);
-        Created result = created(START, size);
-        assertThat(result.status()).isEqualTo("REJECTED");
-        assertThat(reservations()).containsExactly(stored(result, null, size));
+    @ParameterizedTest
+    @MethodSource("partySizesAboveMaximum")
+    void rejectsPartySizesAboveMaximumEvenWithAnAvailableTable(String size) {
+        table(1, 4);
+        seed("CONFIRMED", 1L);
+        table(2, 13);
+        var before = reservations();
+
+        var response = post(request(START, size)).expectStatus().isBadRequest()
+                .expectHeader().doesNotExist("Location");
+        var body = problem(response, 400, "Solicitud inválida",
+                "La cantidad de comensales no puede superar las 12 personas.");
+        assertThat(body.has("reservationCode")).isFalse();
+        assertThat(reservations()).isEqualTo(before);
+    }
+
+    static Stream<String> partySizesAboveMaximum() {
+        return Stream.of("13", "13.0", "2147483648", "1" + "0".repeat(1100));
     }
 
     @Test

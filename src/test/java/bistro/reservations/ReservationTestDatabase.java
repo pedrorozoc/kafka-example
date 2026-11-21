@@ -71,12 +71,16 @@ abstract class ReservationTestDatabase {
     }
 
     UUID seed(String status, Long tableId) {
+        return seed(status, tableId, 4);
+    }
+
+    UUID seed(String status, Long tableId, int partySize) {
         UUID code = UUID.randomUUID();
         sql.update("""
                 INSERT INTO reservation
                     (reservation_code, customer_name, customer_email, reservation_time, party_size, status, assigned_table_id)
-                VALUES (?, 'Ana Pérez', 'ana@example.org', ?, 4, ?, ?)
-                """, code, OffsetDateTime.parse(START), status, tableId);
+                VALUES (?, 'Ana Pérez', 'ana@example.org', ?, ?, ?, ?)
+                """, code, OffsetDateTime.parse(START), partySize, status, tableId);
         return code;
     }
 
@@ -121,7 +125,7 @@ abstract class ReservationTestDatabase {
     record Created(UUID code, String status) {
     }
 
-    void problem(RestTestClient.ResponseSpec response, int status, String title, String detail) {
+    JsonNode problem(RestTestClient.ResponseSpec response, int status, String title, String detail) {
         var result = response.expectStatus().isEqualTo(status)
                 .expectHeader().contentTypeCompatibleWith(APPLICATION_PROBLEM_JSON)
                 .expectBody().returnResult();
@@ -129,5 +133,6 @@ abstract class ReservationTestDatabase {
         assertThat(body.get("status").asInt()).isEqualTo(status);
         assertThat(body.get("title").asString()).isEqualTo(title);
         assertThat(body.get("detail").asString()).isEqualTo(detail);
+        return body;
     }
 }
