@@ -10,7 +10,7 @@ El cliente envía una solicitud válida y obtiene el código de su reserva con l
 
 | Aspecto | Elección |
 | --- | --- |
-| Aplicación | Un JAR ejecutable en JVM, Java 21, Maven Wrapper 3.9.x, Spring Boot 4.2.0 |
+| Aplicación | Un JAR ejecutable en JVM, Java 25, Maven Wrapper 3.9.x, Spring Boot 4.2.0 |
 | Dependencias | Spring MVC, Data JPA, Bean Validation, MapStruct 1.6.3, driver JDBC PostgreSQL y Flyway con soporte PostgreSQL |
 | Datos | PostgreSQL 17, catálogo de mesas preexistente y reservas persistentes |
 | Pruebas | JUnit Jupiter, pruebas HTTP con Spring Boot y transacciones independientes contra PostgreSQL mediante Testcontainers |

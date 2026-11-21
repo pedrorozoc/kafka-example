@@ -1,6 +1,6 @@
 # Validar el ciclo de reserva por HTTP
 
-Esta guía describe la ejecución prevista una vez implementado el plan. Usar Java 21, el Maven Wrapper del proyecto, Docker, Bash, curl y jq. Los comandos parten de la raíz del repositorio. El ejemplo usa una base desechable exclusiva para la prueba y una sola mesa de cuatro plazas.
+Esta guía describe la ejecución prevista una vez implementado el plan. Usar Java 25, el Maven Wrapper del proyecto, Docker, Bash, curl y jq. Los comandos parten de la raíz del repositorio. El ejemplo usa una base desechable exclusiva para la prueba y una sola mesa de cuatro plazas.
 
 El [contrato HTTP](contracts/openapi.yaml) define las respuestas y los códigos de error. El [modelo de datos](data-model.md) define qué asignaciones comprobar en PostgreSQL.
 

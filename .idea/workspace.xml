@@ -15,23 +15,23 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.0003649540997765" />
-      <entry key="MS500" value="1.227499087143223" />
-      <entry key="S2" value="2.765863332257864" />
-      <entry key="S5" value="5.501973448076065" />
-      <entry key="S10" value="8.980330337908443" />
-      <entry key="S30" value="16.767279560576398" />
-      <entry key="S60" value="21.403018845574646" />
-      <entry key="M2" value="24.878863792936592" />
-      <entry key="M5" value="34.504678034742646" />
-      <entry key="M10" value="54.244522802639345" />
-      <entry key="M15" value="69.81023657764612" />
-      <entry key="M30" value="102.15094775787037" />
-      <entry key="H1" value="137.59274022659375" />
-      <entry key="H2" value="166.9356222987657" />
-      <entry key="H4" value="186.34475416719042" />
-      <entry key="D1" value="205.7195685215063" />
-      <entry key="W1" value="209.37960615553632" />
+      <entry key="MS100" value="1.0" />
+      <entry key="MS500" value="1.000000000403701" />
+      <entry key="S2" value="1.0046924570688338" />
+      <entry key="S5" value="1.1541312892715077" />
+      <entry key="S10" value="1.6135433001301245" />
+      <entry key="S30" value="2.9499088187304654" />
+      <entry key="S60" value="3.7520931535481212" />
+      <entry key="M2" value="4.305099264744207" />
+      <entry key="M5" value="4.711008002448313" />
+      <entry key="M10" value="5.698270113689129" />
+      <entry key="M15" value="9.270892003585557" />
+      <entry key="M30" value="30.5155295752041" />
+      <entry key="H1" value="73.80999699346582" />
+      <entry key="H2" value="123.06223017320077" />
+      <entry key="H4" value="161.71263509809745" />
+      <entry key="D1" value="204.86682952860178" />
+      <entry key="W1" value="213.51806931300538" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
@@ -53,23 +53,23 @@
       <entry key="W1" value="0.0" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.9269215684246639" />
-      <entry key="MS500" value="1.2083191182528903" />
-      <entry key="S2" value="2.75452533440744" />
-      <entry key="S5" value="5.49255976582761" />
-      <entry key="S10" value="8.968211862801015" />
-      <entry key="S30" value="16.750289381848997" />
-      <entry key="S60" value="21.389731670921176" />
-      <entry key="M2" value="24.870465892108584" />
-      <entry key="M5" value="34.500585072259845" />
-      <entry key="M10" value="54.24208434075158" />
-      <entry key="M15" value="69.80842382113244" />
-      <entry key="M30" value="102.14984711851552" />
-      <entry key="H1" value="137.59208091077892" />
-      <entry key="H2" value="166.93524681796399" />
-      <entry key="H4" value="186.34455115710463" />
-      <entry key="D1" value="205.71953213474254" />
-      <entry key="W1" value="209.3796008884101" />
+      <entry key="MS100" value="0.8950250709279725" />
+      <entry key="MS500" value="0.9780634738383717" />
+      <entry key="S2" value="0.9991262388812746" />
+      <entry key="S5" value="1.1514901211138393" />
+      <entry key="S10" value="1.6116755807148753" />
+      <entry key="S30" value="2.9487915407152414" />
+      <entry key="S60" value="3.7513843651447316" />
+      <entry key="M2" value="4.3046923793358465" />
+      <entry key="M5" value="4.710829010398776" />
+      <entry key="M10" value="5.69814009082704" />
+      <entry key="M15" value="9.27071660979144" />
+      <entry key="M30" value="30.51522285467645" />
+      <entry key="H1" value="73.80965144129995" />
+      <entry key="H2" value="123.06195671868069" />
+      <entry key="H4" value="161.71246042128504" />
+      <entry key="D1" value="204.86679351915046" />
+      <entry key="W1" value="213.51806397357268" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -97,6 +97,24 @@
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;
   }
 }</component>
+  <component name="RunManager">
+    <configuration default="true" type="JetRunConfigurationType">
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
+    <configuration name="BistroApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="bistro" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="bistro.BistroApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
