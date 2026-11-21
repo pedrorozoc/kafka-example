@@ -8,6 +8,8 @@ description: "Tareas de implementación para el ciclo de vida de una reserva"
 
 **Formato** · `[ID] [P?] [USn?] Descripción con ruta desde la raíz`. `[P]` identifica trabajo que puede coincidir con otra tarea indicada en la sección de dependencias, una vez resueltos los prerrequisitos de ambas. `[USn]` identifica la historia.
 
+T001–T026 registran la entrega original. El incremento de FR-013 empieza en la fase 6. T027 reemplaza la expectativa histórica de T012 para cantidades superiores a 12. T029 amplía la validación de entrada definida en T016.
+
 ## Fase 1 — Preparación
 
 - [X] T001 Configurar Java 25 y un único JAR ejecutable Spring Boot 4.2.0 en `pom.xml`, con Spring MVC, Data JPA, Bean Validation, PostgreSQL JDBC, Flyway y su módulo PostgreSQL, MapStruct 1.6.3 con procesador de la misma versión y componentes Spring, JUnit Jupiter, soporte de pruebas HTTP de Spring Boot y Testcontainers PostgreSQL.
@@ -67,24 +69,53 @@ description: "Tareas de implementación para el ciclo de vida de una reserva"
 - [X] T025 Ejecutar `./mvnw verify` desde `pom.xml` y reproducir `specs/001-reservation-lifecycle/quickstart.md` desde una base limpia usando `README.md`. Comprobar FR-001 a FR-012 y SC-001 a SC-005 en `specs/001-reservation-lifecycle/spec.md`, incluidos el recorrido POST → `Location` → GET y las invariantes SQL.
 - [X] T026 Revisar en `pom.xml`, `src/main/java/bistro/BistroApplication.java`, `src/main/java/bistro/ApiExceptionHandler.java`, `src/main/java/bistro/reservations/controller/CreateReservationController.java` `src/main/java/bistro/reservations/controller/GetReservationStatusController.java` y `src/main/java/bistro/reservations/service/CreateReservationService.java` el artefacto único, la separación de capas y repositorios, el acceso a mesas por `TableCatalog`, el contrato de éxito y error y el idioma conforme a `.specify/memory/constitution.md`. Aplicar `clase-NN-slug` a los commits que se realicen.
 
+## Fase 6 — US1 · Validar el máximo al solicitar una reserva (P1, MVP de FR-013)
+
+**Objetivo** · Aceptar de 1 a 12 comensales y devolver 400 en español para cantidades mayores antes de crear la reserva o consultar disponibilidad.
+
+**Prueba independiente** · Enviar un POST de 12 con y sin mesa apta y obtener 201 con el resultado correspondiente. Con una mesa libre de 13 plazas, enviar un POST de 13 y comprobar 400 sin código, encabezado `Location`, fila nueva ni llamada al servicio de creación.
+
+### Pruebas de aceptación
+
+- [ ] T027 [P] [US1] Actualizar las pruebas de `POST /api/v1/reservations` en `src/test/java/bistro/reservations/CreateReservationHttpTest.java` según `specs/001-reservation-lifecycle/contracts/openapi.yaml`. Comprobar 201 y asignación para 1 y 12 con mesa apta, y 201 con `REJECTED` y mesa nula para 12 sin mesa apta y para 6 con dos mesas de cuatro plazas. Con una mesa libre de 13 plazas, exigir 400 para 13, `13.0`, `2147483648` y el entero largo que cubre la prueba actual. Sustituir las expectativas de persistencia de esos enteros por `application/problem+json` con título «Solicitud inválida» y detalle «La cantidad de comensales no puede superar las 12 personas.», sin código ni `Location` y con las filas y asignaciones intactas. Conservar la aceptación de números de valor entero como `12.0` y `1.2e1`.
+- [ ] T028 [P] [US1] Crear `src/test/java/bistro/reservations/CreateReservationValidationMvcTest.java` como prueba Spring MVC enfocada en `CreateReservationController`, con la validación y el advice reales y un doble de `CreateReservationService`. Enviar un cuerpo válido salvo por `partySize: 13`, comprobar HTTP 400 con el detalle del contrato y verificar cero interacciones con el servicio de creación, punto de entrada a la consulta de disponibilidad.
+
+### Implementación
+
+- [ ] T029 [US1] Aplicar a `partySize` de `src/main/java/bistro/reservations/controller/CreateReservationRequest.java` la regla del modelo «Entero positivo obligatorio. La solicitud HTTP exige de 1 a 12 inclusive. Se conserva `BigInteger` en Java y `numeric` en PostgreSQL para admitir la lectura de registros históricos.». Declarar `@NotNull @Positive @Max(12)` con el mensaje «La cantidad de comensales no puede superar las 12 personas.» para el máximo. Usar el flujo existente de `@Valid` en `src/main/java/bistro/reservations/controller/CreateReservationController.java` y de `ProblemDetail` en `src/main/java/bistro/ApiExceptionHandler.java`.
+
+## Fase 7 — US2 · Consultar reservas anteriores al máximo (P2)
+
+**Objetivo** · Mantener la consulta por código de reservas históricas de más de 12 comensales.
+
+**Prueba independiente** · Sembrar una reserva histórica de 13 por SQL y consultar su código. El GET devuelve 200 con el estado guardado y conserva su asignación.
+
+### Prueba de compatibilidad
+
+- [ ] T030 [P] [US2] Añadir un caso en `src/test/java/bistro/reservations/GetReservationStatusHttpTest.java` que siembre por SQL una reserva de 13 comensales en estado `CONFIRMED` con una mesa de capacidad suficiente. Consultar el código mediante `GET /api/v1/reservations/{reservationCode}` y verificar 200 con el cuerpo exacto `{"status":"CONFIRMED"}` y las filas y asignaciones intactas. La fixture permite ejecutar el caso con la implementación actual del GET.
+
+## Fase 8 — Verificación transversal de FR-013
+
+- [ ] T031 Ejecutar `./mvnw verify` desde `pom.xml` y reproducir el escenario del máximo en `specs/001-reservation-lifecycle/quickstart.md` con una base desechable. Revisar 201 para ambos resultados de un grupo de 12 y 400 para 13 frente a `specs/001-reservation-lifecycle/contracts/openapi.yaml`. Confirmar la cobertura del GET histórico, las invariantes SQL y el cumplimiento de `.specify/memory/constitution.md` versión 1.3.0, incluida la validación antes del servicio y la interfaz pública en `src/main/java/bistro/tables/service/TableCatalog.java`.
+
 ## Dependencias y orden de ejecución
 
 ```text
-Preparación → Fundamentos ┬→ US1 (POST) ─┬→ Verificación transversal
-                          └→ US2 (GET) ──┘
+Base completada ┬→ US1 (T027 y T028 → T029) ─┬→ T031
+                └→ US2 (T030) ──────────────┘
 ```
 
-- T001–T003 habilitan T004. En fundamentos, T005 y T007 habilitan T008, T007 habilita T009 y el esquema de T005 y T008 habilita las fixtures de T011. T010 puede avanzar en paralelo con el esquema y los modelos.
-- US1 y US2 dependen de los fundamentos. US2 usa datos sembrados, por lo que puede verificarse de forma independiente del POST.
-- Escribir y ejecutar las pruebas de cada historia antes de su implementación para observar el fallo inicial. En US1, T014 y T015 habilitan T018, y T016–T018 habilitan T019. En US2, T021 habilita T023 y T021–T023 habilitan T024. T025 y T026 se ejecutan con ambas historias listas.
+- La preparación y los fundamentos de las fases 1 y 2 ya habilitan las dos historias.
+- Ejecutar T027 y T028 antes de T029 para observar el fallo esperado de FR-013. Repetirlas después de aplicar el límite. T030 puede pasar desde el inicio porque usa datos sembrados.
+- Ejecutar T031 cuando ambas historias pasen sus pruebas.
 
 ## Ejemplos de trabajo en paralelo
 
-- **US1** · Escribir T012 y T013 en archivos distintos usando las mismas fixtures de base. Después del fallo inicial, T014, T015, T016 y T017 pueden avanzar en paralelo.
-- **US2** · Escribir T020 en paralelo con T012 y T013. Tras observar el fallo inicial de T020, desarrollar en paralelo T021 para la lectura y T022 para la proyección HTTP. Integrar con T023 y T024.
+- **US1** · Preparar T027 en la suite HTTP con PostgreSQL y T028 en la prueba MVC en paralelo.
+- **US2** · Preparar T030 mientras se trabaja en US1, en un archivo de prueba distinto. Si se ejecutan simultáneamente los casos HTTP de T027 y T030, usar bases de pruebas separadas para sus fixtures SQL.
 
 ## Estrategia de implementación
 
-1. Completar preparación, fundamentos y US1 como MVP. Validar por POST los dos resultados finales, la persistencia y la exclusión de solapes. La ruta indicada en `Location` queda disponible al incorporar US2.
-2. Completar US2 y validar la consulta independientemente con sus fixtures. Comprobar después el recorrido completo usando los códigos devueltos por el POST.
-3. Completar la verificación transversal antes de dar por entregado el ciclo de reserva.
+1. Entregar el límite de entrada como MVP de US1. Validar el 400 para 13 y los dos resultados de negocio que siguen disponibles para 12.
+2. Verificar US2 de forma independiente con la reserva histórica sembrada.
+3. Ejecutar la verificación transversal y el recorrido POST → `Location` → GET para una solicitud válida.
