@@ -1,5 +1,6 @@
 package bistro.reservations.controller;
 
+import bistro.reservations.model.ReservationStart;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
@@ -8,7 +9,6 @@ import jakarta.validation.constraints.Positive;
 import tools.jackson.databind.annotation.JsonDeserialize;
 
 import java.math.BigInteger;
-import java.time.Instant;
 
 public record CreateReservationRequest(
         @NotBlank(message = "El nombre del cliente es obligatorio.")
@@ -22,7 +22,7 @@ public record CreateReservationRequest(
 
         @NotNull(message = "La fecha y hora de la reserva son obligatorias.")
         @JsonDeserialize(using = ReservationRequestJsonConfiguration.ReservationTime.class)
-        Instant reservationTime,
+        ReservationStart reservationTime,
 
         @NotNull(message = "La cantidad de comensales es obligatoria.")
         @Positive(message = "La cantidad de comensales debe ser un entero positivo.")

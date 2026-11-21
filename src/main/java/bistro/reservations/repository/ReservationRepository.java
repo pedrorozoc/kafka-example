@@ -16,9 +16,11 @@ public interface ReservationRepository extends JpaRepository<Reservation, UUID> 
             FROM reservation
             WHERE status = 'CONFIRMED'
               AND assigned_table_id IN (:tableIds)
-              AND reservation_time > :after
-              AND reservation_time < :before
+              AND reservation_time BETWEEN :after AND :before
+              AND (reservation_time, reservation_time_remainder) > (:after, :remainder)
+              AND (reservation_time, reservation_time_remainder) < (:before, :remainder)
             """, nativeQuery = true)
     Set<Long> findOccupiedTableIds(@Param("tableIds") List<Long> tableIds,
-                                   @Param("after") Instant after, @Param("before") Instant before);
+                                   @Param("after") Instant after, @Param("before") Instant before,
+                                   @Param("remainder") String remainder);
 }

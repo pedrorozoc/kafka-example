@@ -9,7 +9,7 @@
 | reservationCode | reservation_code | UUID aleatorio, clave primaria, público e inmutable |
 | customerName | customer_name | Texto obligatorio con al menos un carácter distinto de espacio |
 | customerEmail | customer_email | Texto obligatorio, no vacío y con formato de email |
-| reservationTime | reservation_time | Instante obligatorio, `timestamptz`. El DTO recibe fecha y hora con desplazamiento explícito. |
+| reservationTime | reservation_time, reservation_time_remainder | Instante obligatorio. `timestamptz` conserva hasta seis decimales y la columna de texto guarda los dígitos posteriores, sin ceros finales. La cadena vacía representa una fracción adicional de cero, también para las filas previas a la migración. El DTO recibe fecha y hora con desplazamiento explícito. |
 | partySize | party_size | Entero positivo obligatorio. La solicitud HTTP exige de 1 a 12 inclusive. Se conserva `BigInteger` en Java y `numeric` en PostgreSQL para admitir la lectura de registros históricos. |
 | status | status | Texto obligatorio restringido a PENDING, CONFIRMED o REJECTED |
 | assignedTableId | assigned_table_id | ID numérico opcional que referencia una mesa existente. Presente exactamente cuando el estado es CONFIRMED. |
@@ -22,7 +22,7 @@ El esquema existente exige unicidad del código, nulabilidad conforme al modelo,
 
 `tables` es dueño de `dining_table`, con `id` (bigint, clave primaria) y `capacity` (entero positivo obligatorio). Una mesa puede atender muchas reservas a lo largo del tiempo. Una reserva confirmada usa una sola mesa. El enlace se modela como una clave foránea escalar para mantener la separación entre dominios.
 
-La franja se deriva de `reservationTime` sumando 90 minutos al instante inicial. Usar un intervalo cerrado al inicio y abierto al final. Hay conflicto si **inicio existente < fin solicitado** e **inicio solicitado < fin existente**. Con duración fija, el repositorio puede buscar inicios estrictamente entre el inicio solicitado menos 90 minutos y el fin solicitado, en las mesas candidatas y con estado CONFIRMED. Las reservas rechazadas nunca ocupan capacidad.
+La franja se deriva de `reservationTime` sumando 90 minutos al instante inicial. Usar un intervalo cerrado al inicio y abierto al final. Hay conflicto si **inicio existente < fin solicitado** e **inicio solicitado < fin existente**. Con duración fija, el repositorio puede buscar inicios estrictamente entre el inicio solicitado menos 90 minutos y el fin solicitado, en las mesas candidatas y con estado CONFIRMED. Cuando los microsegundos coinciden, la comparación conserva el orden de los dígitos restantes. Las reservas rechazadas nunca ocupan capacidad.
 
 ## Transiciones y transacción
 

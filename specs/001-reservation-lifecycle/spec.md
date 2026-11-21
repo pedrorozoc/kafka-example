@@ -52,7 +52,7 @@ Como cliente, quiero consultar el estado de mi reserva usando el código recibid
 ### Edge Cases
 
 - Capacidad exacta: una mesa libre con capacidad igual a `partySize` es apta.
-- Catálogo vacío, todas las mesas ocupadas o grupo mayor que cualquier mesa: solicitud válida con resultado `REJECTED`.
+- Si `partySize` está entre 1 y 12 y el resto de la solicitud es válido, un catálogo vacío, la falta de mesas libres o un grupo mayor que la capacidad de cualquier mesa producen `REJECTED`.
 - Varias mesas aptas: se asigna exactamente una; no se exige una política de preferencia.
 - Mesa ocupada en otra franja: esa ocupación no impide asignarla a una franja sin conflicto, según los intervalos de 90 minutos definidos en FR-005.
 - Cruce de medianoche: una reserva a las 23:30 ocupa hasta la 01:00 del día siguiente; una solicitud a las 00:30 de ese día entra en conflicto y una a la 01:00 no.
@@ -109,7 +109,7 @@ Se definen resultados funcionales verificables con los escenarios de aceptación
 
 - **Dependencia de mesas**: El catálogo y sus capacidades están disponibles como datos preexistentes. Esta feature los consume sin añadir gestión de mesas.
 - **Selección de mesa**: Cualquier mesa libre con capacidad suficiente satisface la solicitud. No se exige elegir la de menor capacidad ni combinar mesas.
-- **Validación mínima**: Se adoptan las reglas de FR-002. No se añaden límites de anticipación, horarios de apertura ni límites de comensales independientes de la capacidad disponible.
+- **Validación mínima** — Se aplican las reglas de FR-002 y el máximo de 12 comensales de FR-013. Se aceptan solicitudes sin restricciones de anticipación ni de horario de apertura.
 - **Identificación**: El código basta para consultar el estado. El email no se verifica mediante mensajes ni representa una cuenta.
 - **Franja acordada**: El cliente definió intervalos de duración fija de 90 minutos. Se adopta como convención que dos intervalos adyacentes no se superponen, sin tiempo adicional entre reservas.
 

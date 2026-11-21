@@ -119,3 +119,9 @@ Base completada ┬→ US1 (T027 y T028 → T029) ─┬→ T031
 1. Entregar el límite de entrada como MVP de US1. Validar el 400 para 13 y los dos resultados de negocio que siguen disponibles para 12.
 2. Verificar US2 de forma independiente con la reserva histórica sembrada.
 3. Ejecutar la verificación transversal y el recorrido POST → `Location` → GET para una solicitud válida.
+
+## Phase 9: Convergence
+
+- [X] T032 **CRITICAL** Reserva `bistro.tables.controller` y `bistro.notifications` mediante declaraciones de paquete en `src/main/java/bistro/`. Refleja las capas `controller`, `service`, `repository` y `model` previstas para el futuro módulo de notificaciones y deja la reserva de paquetes como única entrega de esta tarea, según la Constitución I–II, la estructura del plan y T026 (contradicts)
+- [X] T033 Conserva la precisión de las horas aceptadas por HTTP al comparar y persistir los intervalos de 90 minutos. Añade una prueba en `src/test/java/bistro/reservations/CreateReservationHttpTest.java` con inicios `19:00:00.0000009Z` y `20:30:00.0000001Z` en la misma fecha y la única mesa apta, y verifica rechazo para el solape y confirmación para la adyacencia exacta. Mantén la consulta y la ocupación de las reservas existentes, según FR-005, FR-008, SC-003 y T016 (partial)
+- [X] T034 Devuelve el detalle «La cantidad de comensales no puede superar las 12 personas.» para cantidades JSON enteras sobre el máximo que superan el límite numérico del lector, también en notación exponencial como `1e131072`. Mantén el procesamiento numérico acotado y comprueba en `src/test/java/bistro/reservations/CreateReservationHttpTest.java` el 400 en español, la ausencia de `Location` y que las reservas y asignaciones siguen intactas, según FR-013, el plan de validación y T029 (partial)

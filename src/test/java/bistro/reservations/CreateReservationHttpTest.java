@@ -65,7 +65,7 @@ class CreateReservationHttpTest extends ReservationTestDatabase {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"1", "12", "12.0", "1.2e1"})
+    @ValueSource(strings = {"1", "12", "12.0", "1.2e1", "0.0012e4", "1200e-2"})
     void confirmsValidBoundarySizesIncludingEquivalentJsonNumbers(String size) {
         table(1, 12);
         Created result = created(START, size);
@@ -95,7 +95,23 @@ class CreateReservationHttpTest extends ReservationTestDatabase {
                 .satisfies(row -> assertThat(row.time()).isEqualTo(OffsetDateTime.parse("2030-06-13T00:00:00.000001Z")));
     }
 
-    @ParameterizedTest
+    @Test
+    void rejectsSubmicrosecondOverlapAndAcceptsExactAdjacency() {
+        table(1, 4);
+        Created first = created("2030-06-12T19:00:00.0000009Z", "4");
+        Created overlapping = created("2030-06-12T20:30:00.0000001Z", "4");
+        Created adjacent = created("2030-06-12T20:30:00.0000009000Z", "4");
+
+        assertThat(first.status()).isEqualTo("CONFIRMED");
+        assertThat(overlapping.status()).isEqualTo("REJECTED");
+        assertThat(adjacent.status()).isEqualTo("CONFIRMED");
+        assertThat(reservations()).filteredOn(row -> row.tableId() != null)
+                .extracting(StoredReservation::code).containsExactlyInAnyOrder(first.code(), adjacent.code());
+        assertThat(sql.queryForList("SELECT reservation_time_remainder FROM reservation", String.class))
+                .containsExactlyInAnyOrder("9", "1", "9");
+    }
+
+    @ParameterizedTest(name = "[{index}]")
     @MethodSource("partySizesAboveMaximum")
     void rejectsPartySizesAboveMaximumEvenWithAnAvailableTable(String size) {
         table(1, 4);
@@ -112,7 +128,8 @@ class CreateReservationHttpTest extends ReservationTestDatabase {
     }
 
     static Stream<String> partySizesAboveMaximum() {
-        return Stream.of("13", "13.0", "2147483648", "1" + "0".repeat(1100));
+        return Stream.of("13", "13.0", "2147483648", "1" + "0".repeat(1100),
+                "1e131072", "1.31e2147483648", "1" + "0".repeat(131_072));
     }
 
     @Test
@@ -161,6 +178,8 @@ class CreateReservationHttpTest extends ReservationTestDatabase {
                 new InvalidRequest(request("2030-06-12T19:00Z", "4"), INVALID_JSON),
                 new InvalidRequest(request("2030-02-30T19:00:00Z", "4"), INVALID_JSON),
                 new InvalidRequest(request(START, "2.5"), INVALID_JSON),
+                new InvalidRequest(request(START, "13.0000000000001"), INVALID_JSON),
+                new InvalidRequest(request(START, "1e-2147483649"), INVALID_JSON),
                 new InvalidRequest(request(START, "\"4\""), INVALID_JSON),
                 new InvalidRequest(request(START, "true"), INVALID_JSON),
                 new InvalidRequest(request(START, "[]"), INVALID_JSON),

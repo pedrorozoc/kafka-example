@@ -1,6 +1,7 @@
 package bistro.reservations.model;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -12,8 +13,6 @@ import jakarta.persistence.Transient;
 import org.springframework.data.domain.Persistable;
 
 import java.math.BigInteger;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 @Entity
@@ -29,8 +28,8 @@ public class Reservation implements Persistable<UUID> {
     @Column(nullable = false, columnDefinition = "text")
     private String customerEmail;
 
-    @Column(nullable = false)
-    private Instant reservationTime;
+    @Embedded
+    private ReservationStart reservationTime;
 
     @Column(nullable = false, columnDefinition = "numeric")
     private BigInteger partySize;
@@ -47,12 +46,11 @@ public class Reservation implements Persistable<UUID> {
     protected Reservation() {
     }
 
-    public Reservation(String customerName, String customerEmail, Instant reservationTime, BigInteger partySize) {
+    public Reservation(String customerName, String customerEmail, ReservationStart reservationTime, BigInteger partySize) {
         this.reservationCode = UUID.randomUUID();
         this.customerName = customerName;
         this.customerEmail = customerEmail;
-        // PostgreSQL conserva los instantes con precisión de microsegundos.
-        this.reservationTime = reservationTime.truncatedTo(ChronoUnit.MICROS);
+        this.reservationTime = reservationTime;
         this.partySize = partySize;
         this.status = ReservationStatus.PENDING;
     }
@@ -74,7 +72,7 @@ public class Reservation implements Persistable<UUID> {
         }
     }
 
-    public Instant getReservationTime() {
+    public ReservationStart getReservationTime() {
         return reservationTime;
     }
 
