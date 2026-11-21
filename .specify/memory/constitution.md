@@ -1,10 +1,11 @@
 <!--
 Informe de impacto
-Versión sin ratificar → 1.0.0 (adopción inicial).
-Principios incorporados: diseño por capas, monolito modular, contratos HTTP,
-validación y errores, e idioma del proyecto.
-Secciones incorporadas: convenciones del repositorio, revisión de cambios y gobernanza.
-Secciones eliminadas: ninguna. Pendientes: ninguno.
+Versión de la enmienda 1.2.0 → 1.3.0.
+Principio modificado — II. Monolito modular.
+Sección añadida — VI. Dependencias entre módulos.
+Sección actualizada — Revisión de cambios.
+Secciones eliminadas — ninguna.
+Pendientes — ninguno.
 -->
 
 # Bistro Constitution
@@ -31,9 +32,7 @@ El manejo global de excepciones debe implementarse con @RestControllerAdvice y P
 
 Bistro debe desplegarse como un único artefacto. Los módulos `reservations`, `tables` y
 `notifications` deben ocupar subpaquetes propios. Cada módulo debe ser dueño de su dominio,
-de su repositorio y de las interfaces públicas que ofrece a otros módulos. Toda interacción
-entre módulos debe pasar por esas interfaces. Así, un módulo puede cambiar su persistencia
-sin obligar a sus consumidores a modificar sus consultas.
+de su repositorio y de los tipos públicos que ofrece a otros módulos.
 
 ### III. Contratos HTTP y mapeo
 
@@ -56,6 +55,21 @@ en inglés. Los comentarios, los mensajes de log, los mensajes de excepción y l
 dirigidos al cliente deben escribirse en español. Esta regla incluye el título y el detalle
 de los errores que devuelve la API.
 
+### VI. Dependencias entre módulos
+
+Dentro de un módulo se prefieren las clases concretas. Una interfaz requiere una necesidad
+de diseño que la justifique.
+
+Cuando una dependencia cruza una frontera de módulo, se debe evaluar qué cambios podrían
+afectar al consumidor. Si la dependencia es volátil o está controlada por un factor externo
+como una tecnología, un proveedor, un protocolo o el mecanismo de persistencia, el módulo
+proveedor debe publicar una interfaz en su paquete `service` y mantener la implementación
+concreta con visibilidad de paquete (`package-private`). Así, los consumidores quedan
+aislados de los cambios de implementación.
+
+Si la dependencia es estable y carece de detalles que deban aislarse, depender directamente
+de la clase concreta es válido.
+
 ## Convenciones del repositorio
 
 Cada mensaje de commit debe seguir el formato `clase-NN-slug`, donde `NN` representa
@@ -66,8 +80,8 @@ repositorio. Todo cambio en el procedimiento de arranque debe actualizar esas in
 ## Revisión de cambios
 
 Al revisar un cambio se debe comprobar el cumplimiento de los principios que afecta.
-Por ejemplo, si una reserva consulta la disponibilidad de una mesa, la revisión debe
-verificar que `reservations` utiliza la interfaz pública de `tables`. Si cambia un endpoint,
+Si cambia una dependencia entre módulos, la revisión debe verificar que el tipo elegido
+responde a su estabilidad y a la necesidad de aislar al consumidor. Si cambia un endpoint,
 se deben revisar tanto su contrato de éxito como su contrato de error.
 
 ## Governance
@@ -81,4 +95,4 @@ La versión sigue el esquema `MAJOR.MINOR.PATCH`. Se incrementa `MAJOR` al elimi
 principio o redefinirlo de forma incompatible, `MINOR` al añadir un principio o ampliar
 sustancialmente su alcance y `PATCH` al aclarar la redacción sin cambiar las obligaciones.
 
-**Version**: 1.2.0 | **Ratified**: 2026-11-20 | **Last Amended**: 2026-11-20
+**Version**: 1.3.0 | **Ratified**: 2026-11-20 | **Last Amended**: 2026-11-20
