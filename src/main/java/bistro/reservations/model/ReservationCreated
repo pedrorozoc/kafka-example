@@ -1,0 +1,10 @@
+// Record REservationCreated
+
+package bistro.reservations.model;
+
+public record ReservationCreated(
+        Long reservationId,
+        Integer partySize,
+        LocalDateTime occurredAt
+) {
+}

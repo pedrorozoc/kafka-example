@@ -1,0 +1,51 @@
+# Servicios de mensajería para desarrollo local.
+services:
+  kafka:
+    image: apache/kafka:4.4.0
+    container_name: bistro-kafka
+    ports:
+      # Punto de conexión para clientes que se ejecutan en el equipo local.
+      - "127.0.0.1:9092:9092"
+    environment:
+      # KRaft combina el broker y el controlador en un solo nodo.
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: DOCKER
+
+      # HOST atiende a clientes locales y DOCKER a los servicios de Compose.
+      # CONTROLLER se usa para el tráfico interno del quórum KRaft.
+      KAFKA_LISTENERS: HOST://0.0.0.0:9092,DOCKER://0.0.0.0:29092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: HOST://localhost:9092,DOCKER://kafka:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: HOST:PLAINTEXT,DOCKER:PLAINTEXT,CONTROLLER:PLAINTEXT
+
+      # Los tópicos internos deben funcionar con un solo broker.
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_SHARE_COORDINATOR_STATE_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_SHARE_COORDINATOR_STATE_TOPIC_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+    healthcheck:
+      # Comprueba que el broker responde a través del listener de Compose.
+      test: ["CMD", "/opt/kafka/bin/kafka-topics.sh", "--bootstrap-server", "kafka:29092", "--list"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 20s
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:v0.7.2
+    container_name: bistro-kafka-ui
+    depends_on:
+      kafka:
+        condition: service_healthy
+    ports:
+      # La interfaz queda en http://localhost:8081 y la API conserva el 8080.
+      - "127.0.0.1:8081:8080"
+    environment:
+      DYNAMIC_CONFIG_ENABLED: 'true'      
+      KAFKA_CLUSTERS_0_NAME: bistro-local
+      # La UI se conecta al broker por la red interna de Compose.
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
