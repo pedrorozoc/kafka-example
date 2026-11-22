@@ -22,6 +22,16 @@ export SPRING_DATASOURCE_PASSWORD=local_bistro
 Al arrancar, Flyway aplica las migraciones y JPA valida el esquema. La API
 escucha en el puerto 8080. El catálogo se carga como dato preexistente.
 
+El POST de reservas recibe la fecha y hora local a precisión de minuto, por
+ejemplo `2030-06-12T19:00`, y una cantidad entera de 1 a 12 comensales.
+
+Al actualizar una base existente desde V3, detén las instancias anteriores y
+respalda la base antes de arrancar la nueva versión. Flyway convierte las fechas
+históricas a la zona IANA indicada mediante `BISTRO_LEGACY_RESERVATION_ZONE`.
+El valor predeterminado es `America/Bogota`. Configura la zona histórica real
+del restaurante antes de aplicar V4. Actualiza los clientes del POST para que
+envíen el nuevo formato de fecha y hora.
+
 Exclusivamente en la base desechable de validación, ejecuta este SQL tras
 arrancar para cargar la mesa de cuatro plazas del ejemplo.
 

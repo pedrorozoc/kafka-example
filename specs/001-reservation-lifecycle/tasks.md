@@ -76,3 +76,16 @@ T006 y T007 aprobadas → T008 → T009
 2. Entregar US1 como MVP con asignación por instante, las garantías transaccionales y el POST validado.
 3. Completar US2 con reservas sembradas y verificar que la consulta y las asignaciones históricas sobreviven al cambio.
 4. Cerrar con la suite completa, la guía HTTP y la revisión de compatibilidad.
+
+## Incremento — fecha y hora local a precisión de minuto
+
+Las tareas T001 a T009 registran la entrega anterior. Este incremento aplica la revisión vigente de la spec 001.
+
+- [X] T010 Revisar los requisitos y la constitución, comprobar Java y Maven, y verificar los archivos de exclusión del proyecto.
+- [X] T011 [US1] Adaptar las pruebas HTTP y MVC y las fixtures de `src/test/java/bistro/reservations/` al formato local y al rango de comensales. Verificar el fallo esperado antes de implementar.
+- [X] T012 [US2] Cubrir en `src/test/java/bistro/reservations/` la actualización desde V3, la consulta de reservas históricas, las coincidencias por minuto y la reversión de una migración inválida.
+- [X] T013 Añadir V4 en `src/main/resources/db/migration/` y configurar Flyway y el acceso JDBC directo en `src/main/resources/application.yaml`.
+- [X] T014 [US1] Usar `LocalDateTime` e `Integer` en `src/main/java/bistro/reservations/`. Comparar minutos en el repositorio y adaptar el argumento de `TableCatalog` en `src/main/java/bistro/tables/`. Conservar las validaciones y el bloqueo transaccional.
+- [X] T015 Actualizar `README.md`, contrastar la API con `contracts/openapi.yaml`, ejecutar `./mvnw verify` sobre PostgreSQL y revisar el diff frente a la constitución.
+
+T010 precede a las pruebas T011 y T012. Después se aplican T013 y T014 y se ejecuta T015.

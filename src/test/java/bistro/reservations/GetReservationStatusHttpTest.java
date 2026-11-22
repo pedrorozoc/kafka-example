@@ -39,26 +39,25 @@ class GetReservationStatusHttpTest extends ReservationTestDatabase {
     }
 
     @Test
-    void preservesAHistoricalReservationAndItsAssignmentAtTheStoredInstant() {
+    void retainsHistoricalConfirmationsAndBlocksTheirSharedMinute() {
         table(1, 4);
-        UUID historical = seed("CONFIRMED", 1L);
-        String historicalRow = """
-                SELECT reservation_code, reservation_time, reservation_time_remainder, status, assigned_table_id
-                FROM reservation WHERE reservation_code = ?
-                """;
-        var before = sql.queryForMap(historicalRow, historical);
-        assertThat(before).containsEntry("reservation_time_remainder", "");
-        assertStatus(historical, "CONFIRMED");
+        UUID first = seed("CONFIRMED", 1L);
+        UUID second = seed("CONFIRMED", 1L);
+        var before = reservations();
+        assertStatus(first, "CONFIRMED");
+        assertStatus(second, "CONFIRMED");
 
-        Created sameInstant = created(START, "4");
-        Created differentInstant = created("2030-06-12T19:01:00-05:00", "4");
+        Created sameMinute = created(START, "4");
+        Created differentMinute = created("2030-06-12T19:01", "4");
 
-        assertThat(sameInstant.status()).isEqualTo("REJECTED");
-        assertThat(differentInstant.status()).isEqualTo("CONFIRMED");
-        assertThat(reservations()).filteredOn(row -> row.tableId() != null)
-                .extracting(StoredReservation::code).containsExactlyInAnyOrder(historical, differentInstant.code());
-        assertStatus(historical, "CONFIRMED");
-        assertThat(sql.queryForMap(historicalRow, historical)).isEqualTo(before);
+        assertThat(sameMinute.status()).isEqualTo("REJECTED");
+        assertThat(differentMinute.status()).isEqualTo("CONFIRMED");
+        assertThat(reservations()).containsAll(before)
+                .filteredOn(row -> row.tableId() != null)
+                .extracting(StoredReservation::code)
+                .containsExactlyInAnyOrder(first, second, differentMinute.code());
+        assertStatus(first, "CONFIRMED");
+        assertStatus(second, "CONFIRMED");
     }
 
     @ParameterizedTest

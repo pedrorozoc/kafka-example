@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.math.BigInteger;
 import java.util.List;
 
 public interface DiningTableRepository extends JpaRepository<DiningTable, Long> {
@@ -16,5 +15,5 @@ public interface DiningTableRepository extends JpaRepository<DiningTable, Long> 
             ORDER BY id
             FOR UPDATE
             """, nativeQuery = true)
-    List<Long> lockCandidates(@Param("partySize") BigInteger partySize);
+    List<Long> lockCandidates(@Param("partySize") int partySize);
 }

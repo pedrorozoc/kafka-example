@@ -1,6 +1,5 @@
 package bistro.reservations.controller;
 
-import bistro.reservations.model.ReservationStart;
 import org.springframework.boot.jackson.autoconfigure.JsonFactoryBuilderCustomizer;
 import org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -12,11 +11,11 @@ import tools.jackson.databind.DeserializationContext;
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.ValueDeserializer;
 
-import java.math.BigInteger;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 @Configuration(proxyBeanMethods = false)
@@ -45,54 +44,38 @@ class ReservationRequestJsonConfiguration {
         }
     }
 
-    static final class ReservationTime extends ValueDeserializer<ReservationStart> {
-        private static final Pattern RFC_3339 = Pattern.compile(
-                "([0-9]{4}-[0-9]{2}-[0-9]{2}[Tt][0-9]{2}:[0-9]{2}:[0-9]{2})"
-                        + "(?:\\.([0-9]+))?([Zz]|[+-](?:[01][0-9]|2[0-3]):[0-5][0-9])");
+    static final class ReservationTime extends ValueDeserializer<LocalDateTime> {
+        private static final Pattern LOCAL_MINUTE = Pattern.compile(
+                "[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}");
+        private static final DateTimeFormatter FORMAT = DateTimeFormatter
+                .ofPattern("uuuu-MM-dd'T'HH:mm", Locale.ROOT).withResolverStyle(ResolverStyle.STRICT);
 
         @Override
-        public ReservationStart deserialize(JsonParser parser, DeserializationContext context) {
-            if (parser.currentToken() == JsonToken.VALUE_STRING) {
-                var match = RFC_3339.matcher(parser.getString());
-                if (match.matches()) {
-                    try {
-                        String fraction = match.group(2);
-                        String local = match.group(1);
-                        String remainder = "";
-                        if (fraction != null) {
-                            int end = Math.min(fraction.length(), 6);
-                            local += "." + fraction.substring(0, end);
-                            remainder = fraction.substring(end);
-                        }
-                        Instant instant = LocalDateTime.parse(local).toInstant(ZoneOffset.UTC);
-                        return new ReservationStart(instant.minusSeconds(offsetSeconds(match.group(3))), remainder);
-                    } catch (DateTimeParseException exception) {
-                        return invalidTime(context);
-                    }
-                }
+        public LocalDateTime deserialize(JsonParser parser, DeserializationContext context) {
+            if (parser.currentToken() != JsonToken.VALUE_STRING) {
+                return invalidTime(context);
             }
-            return invalidTime(context);
+            String text = parser.getString();
+            if (text.length() != 16 || !LOCAL_MINUTE.matcher(text).matches()) {
+                return invalidTime(context);
+            }
+            try {
+                return LocalDateTime.parse(text, FORMAT);
+            } catch (DateTimeParseException exception) {
+                return invalidTime(context);
+            }
         }
 
-        private int offsetSeconds(String offset) {
-            if (offset.length() == 1) {
-                return 0;
-            }
-            int hours = Integer.parseInt(offset.substring(1, 3));
-            int minutes = Integer.parseInt(offset.substring(4));
-            return (hours * 3600 + minutes * 60) * (offset.charAt(0) == '-' ? -1 : 1);
-        }
-
-        private ReservationStart invalidTime(DeserializationContext context) {
-            return context.reportInputMismatch(this, "La fecha y hora deben tener un desplazamiento UTC explícito.");
+        private LocalDateTime invalidTime(DeserializationContext context) {
+            return context.reportInputMismatch(this, "La fecha y hora locales deben tener el formato AAAA-MM-DDTHH:mm.");
         }
     }
 
-    static final class PartySize extends ValueDeserializer<BigInteger> {
+    static final class PartySize extends ValueDeserializer<Integer> {
         private static final int LARGE_MAGNITUDE = 100;
 
         @Override
-        public BigInteger deserialize(JsonParser parser, DeserializationContext context) {
+        public Integer deserialize(JsonParser parser, DeserializationContext context) {
             if (parser.currentToken() == JsonToken.VALUE_NUMBER_INT
                     || parser.currentToken() == JsonToken.VALUE_NUMBER_FLOAT) {
                 return readInteger(parser.getText(), context);
@@ -100,7 +83,7 @@ class ReservationRequestJsonConfiguration {
             return invalidSize(context);
         }
 
-        private BigInteger readInteger(String number, DeserializationContext context) {
+        private Integer readInteger(String number, DeserializationContext context) {
             boolean negative = number.charAt(0) == '-';
             int start = negative ? 1 : 0;
             int exponentAt = Math.max(number.indexOf('e'), number.indexOf('E'));
@@ -128,7 +111,7 @@ class ReservationRequestJsonConfiguration {
                 digitIndex++;
             }
             if (firstNonzero < 0) {
-                return BigInteger.ZERO;
+                return 0;
             }
 
             // Desplaza el punto decimal sin expandir el exponente ni construir enteros enormes.
@@ -144,7 +127,7 @@ class ReservationRequestJsonConfiguration {
             } else if (integerDigits == 2) {
                 magnitude = prefix < 10 ? prefix * 10 : prefix;
             }
-            return BigInteger.valueOf(negative ? -magnitude : magnitude);
+            return negative ? -magnitude : magnitude;
         }
 
         private long boundedExponent(String number, int exponentAt) {
@@ -159,7 +142,7 @@ class ReservationRequestJsonConfiguration {
             }
         }
 
-        private BigInteger invalidSize(DeserializationContext context) {
+        private Integer invalidSize(DeserializationContext context) {
             return context.reportInputMismatch(this, "La cantidad de comensales debe ser un número entero.");
         }
     }

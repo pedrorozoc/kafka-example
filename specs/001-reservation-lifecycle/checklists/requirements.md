@@ -6,9 +6,9 @@
 
 ## Content Quality
 
-- [x] Sin decisiones de implementación (lenguajes, frameworks o almacenamiento); los endpoints son requisitos explícitos del usuario.
+- [x] Las decisiones técnicas se limitan a los tipos de datos y al contrato HTTP incluidos en el alcance.
 - [x] Centrada en el valor para el cliente y las necesidades del restaurante.
-- [x] Redactada para interesados del negocio, conservando los identificadores del dominio solicitados.
+- [x] Redactada para interesados del negocio, con los tipos técnicos en una sección propia.
 - [x] Todas las secciones obligatorias completadas.
 
 ## Requirement Completeness
@@ -27,13 +27,11 @@
 - [x] Todos los requisitos funcionales tienen criterios de aceptación claros.
 - [x] Los escenarios cubren los flujos principales.
 - [x] La feature tiene resultados verificables completamente definidos en los criterios de éxito.
-- [x] No se filtran decisiones de implementación a la especificación.
+- [x] Los escenarios y criterios de éxito describen resultados observables.
 
 ## Notes
 
-- Revisión final: 16 de 16 criterios satisfechos, sin aclaraciones pendientes.
-- Revisión del 2026-11-22. FR-002 define una sola fecha y hora de llegada. FR-005 y FR-008 evalúan la disponibilidad para el mismo instante. Los escenarios 5, 7 y 8 de la historia 1 cubren instantes iguales, distintos y equivalentes con distintos desplazamientos respecto a UTC. La historia 2 verifica la conservación de las reservas existentes.
-- Se conservan los contratos HTTP porque el usuario los pidió expresamente; no son una decisión de implementación añadida.
-- Los criterios de éxito usan resultados funcionales en lugar de métricas de negocio, respetando la exclusión explícita del usuario.
-- Se revisó la constitución. Sus decisiones de implementación corresponden al plan; aquí se conservan las obligaciones observables sobre rutas, validación, errores uniformes e idioma.
-- Lista para `$speckit-plan`. Esta checklist evalúa requisitos, no acredita implementación.
+- La revisión del 2026-11-22 completó los 16 criterios de la lista.
+- Los escenarios 5, 7 y 8 de la historia 1 cubren la ocupación en el mismo minuto, la reutilización en otro minuto y el rechazo de formatos con segundos o desplazamiento. El escenario 9 cubre los límites de 1 y 12 comensales y los valores adyacentes fuera del rango.
+- Los escenarios 5 y 6 de la historia 2 cubren la reducción de precisión y las coincidencias históricas en mesa y minuto.
+- La especificación está lista para `$speckit-plan`. El plan, el modelo de datos, el contrato OpenAPI y las tareas de la revisión anterior requieren actualización. El plan debe identificar la zona del restaurante que se usará para convertir los datos históricos.

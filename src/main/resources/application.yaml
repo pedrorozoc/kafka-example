@@ -1,7 +1,11 @@
 spring:
   flyway:
     enabled: true
+    placeholders:
+      restaurant_zone: ${BISTRO_LEGACY_RESERVATION_ZONE:America/Bogota}
   jpa:
     open-in-view: false
+    properties:
+      hibernate.type.java_time_use_direct_jdbc: true
     hibernate:
       ddl-auto: validate

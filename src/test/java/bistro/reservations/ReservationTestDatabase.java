@@ -13,7 +13,7 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 
 import javax.sql.DataSource;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,7 +25,7 @@ import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON;
 @AutoConfigureRestTestClient
 abstract class ReservationTestDatabase {
     static final String PATH = "/api/v1/reservations";
-    static final String START = "2030-06-12T19:00:00-05:00";
+    static final String START = "2030-06-12T19:00";
     static final JsonMapper JSON = JsonMapper.builder().build();
 
     @Autowired
@@ -39,16 +39,24 @@ abstract class ReservationTestDatabase {
 
     @DynamicPropertySource
     static void configureDatabase(DynamicPropertyRegistry registry) {
-        String localUrl = System.getenv("BISTRO_TEST_DATABASE_URL");
-        if (localUrl == null) {
-            registry.add("spring.datasource.url", Container.POSTGRES::getJdbcUrl);
-            registry.add("spring.datasource.username", Container.POSTGRES::getUsername);
-            registry.add("spring.datasource.password", Container.POSTGRES::getPassword);
-        } else {
-            registry.add("spring.datasource.url", () -> localUrl);
-            registry.add("spring.datasource.username", () -> System.getenv("BISTRO_TEST_DATABASE_USERNAME"));
-            registry.add("spring.datasource.password", () -> System.getenv("BISTRO_TEST_DATABASE_PASSWORD"));
-        }
+        registry.add("spring.datasource.url", ReservationTestDatabase::databaseUrl);
+        registry.add("spring.datasource.username", ReservationTestDatabase::databaseUsername);
+        registry.add("spring.datasource.password", ReservationTestDatabase::databasePassword);
+    }
+
+    static String databaseUrl() {
+        String url = System.getenv("BISTRO_TEST_DATABASE_URL");
+        return url == null ? Container.POSTGRES.getJdbcUrl() : url;
+    }
+
+    static String databaseUsername() {
+        return System.getenv("BISTRO_TEST_DATABASE_URL") == null
+                ? Container.POSTGRES.getUsername() : System.getenv("BISTRO_TEST_DATABASE_USERNAME");
+    }
+
+    static String databasePassword() {
+        return System.getenv("BISTRO_TEST_DATABASE_URL") == null
+                ? Container.POSTGRES.getPassword() : System.getenv("BISTRO_TEST_DATABASE_PASSWORD");
     }
 
     private static class Container {
@@ -80,7 +88,7 @@ abstract class ReservationTestDatabase {
                 INSERT INTO reservation
                     (reservation_code, customer_name, customer_email, reservation_time, party_size, status, assigned_table_id)
                 VALUES (?, 'Ana Pérez', 'ana@example.org', ?, ?, ?, ?)
-                """, code, OffsetDateTime.parse(START), partySize, status, tableId);
+                """, code, LocalDateTime.parse(START), partySize, status, tableId);
         return code;
     }
 
@@ -91,12 +99,12 @@ abstract class ReservationTestDatabase {
                 """, (row, number) -> new StoredReservation(
                 row.getObject("reservation_code", UUID.class), row.getString("status"),
                 row.getObject("assigned_table_id", Long.class), row.getString("customer_name"),
-                row.getString("customer_email"), row.getObject("reservation_time", OffsetDateTime.class),
-                row.getBigDecimal("party_size").toBigIntegerExact()));
+                row.getString("customer_email"), row.getObject("reservation_time", LocalDateTime.class),
+                row.getInt("party_size")));
     }
 
     record StoredReservation(UUID code, String status, Long tableId, String name, String email,
-                             OffsetDateTime time, java.math.BigInteger size) {
+                             LocalDateTime time, int size) {
     }
 
     static String request(String start, String size) {

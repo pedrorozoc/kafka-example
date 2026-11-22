@@ -6,8 +6,29 @@
   <component name="ChangeListManager">
     <list default="true" id="3b12ee5d-687a-4ada-9248-ec441db1de99" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/specs/001-reservation-lifecycle/checklists/requirements.md" beforeDir="false" afterPath="$PROJECT_DIR$/specs/001-reservation-lifecycle/checklists/requirements.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/specs/001-reservation-lifecycle/contracts/openapi.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/specs/001-reservation-lifecycle/contracts/openapi.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/specs/001-reservation-lifecycle/data-model.md" beforeDir="false" afterPath="$PROJECT_DIR$/specs/001-reservation-lifecycle/data-model.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/specs/001-reservation-lifecycle/plan.md" beforeDir="false" afterPath="$PROJECT_DIR$/specs/001-reservation-lifecycle/plan.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/specs/001-reservation-lifecycle/quickstart.md" beforeDir="false" afterPath="$PROJECT_DIR$/specs/001-reservation-lifecycle/quickstart.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/specs/001-reservation-lifecycle/research.md" beforeDir="false" afterPath="$PROJECT_DIR$/specs/001-reservation-lifecycle/research.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/specs/001-reservation-lifecycle/spec.md" beforeDir="false" afterPath="$PROJECT_DIR$/specs/001-reservation-lifecycle/spec.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/specs/001-reservation-lifecycle/tasks.md" beforeDir="false" afterPath="$PROJECT_DIR$/specs/001-reservation-lifecycle/tasks.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bistro/reservations/controller/CreateReservationRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bistro/reservations/controller/CreateReservationRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bistro/reservations/controller/ReservationRequestJsonConfiguration.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bistro/reservations/controller/ReservationRequestJsonConfiguration.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bistro/reservations/model/Reservation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bistro/reservations/model/Reservation.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bistro/reservations/model/ReservationStart.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bistro/reservations/repository/ReservationRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bistro/reservations/repository/ReservationRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bistro/reservations/service/CreateReservationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bistro/reservations/service/CreateReservationService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bistro/tables/repository/DiningTableRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bistro/tables/repository/DiningTableRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bistro/tables/service/DatabaseTableCatalog.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bistro/tables/service/DatabaseTableCatalog.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bistro/tables/service/TableCatalog.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bistro/tables/service/TableCatalog.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/bistro/reservations/CreateReservationHttpTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/bistro/reservations/CreateReservationHttpTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/bistro/reservations/CreateReservationValidationMvcTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/bistro/reservations/CreateReservationValidationMvcTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/bistro/reservations/GetReservationStatusHttpTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/bistro/reservations/GetReservationStatusHttpTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/bistro/reservations/ReservationTestDatabase.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/bistro/reservations/ReservationTestDatabase.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,23 +47,23 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.0" />
-      <entry key="MS500" value="1.000000000403701" />
-      <entry key="S2" value="1.0046924570688338" />
-      <entry key="S5" value="1.1541312892715077" />
-      <entry key="S10" value="1.6135433001301245" />
-      <entry key="S30" value="2.9499088187304654" />
-      <entry key="S60" value="3.7520931535481212" />
-      <entry key="M2" value="4.305099264744207" />
-      <entry key="M5" value="4.711008002448313" />
-      <entry key="M10" value="5.698270113689129" />
-      <entry key="M15" value="9.270892003585557" />
-      <entry key="M30" value="30.5155295752041" />
-      <entry key="H1" value="73.80999699346582" />
-      <entry key="H2" value="123.06223017320077" />
-      <entry key="H4" value="161.71263509809745" />
-      <entry key="D1" value="204.86682952860178" />
-      <entry key="W1" value="213.51806931300538" />
+      <entry key="MS100" value="1.000025840672838" />
+      <entry key="MS500" value="1.1298341212552458" />
+      <entry key="S2" value="1.897038012944253" />
+      <entry key="S5" value="2.43337369651898" />
+      <entry key="S10" value="2.689574727126604" />
+      <entry key="S30" value="2.889765075440292" />
+      <entry key="S60" value="2.9439878218941598" />
+      <entry key="M2" value="2.974051227553572" />
+      <entry key="M5" value="3.219397726476802" />
+      <entry key="M10" value="4.255429040692417" />
+      <entry key="M15" value="6.388257834873743" />
+      <entry key="M30" value="21.45638267733339" />
+      <entry key="H1" value="60.404133061864314" />
+      <entry key="H2" value="111.52766488283302" />
+      <entry key="H4" value="154.86303095501694" />
+      <entry key="D1" value="205.73233683889623" />
+      <entry key="W1" value="216.19883711616984" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
@@ -64,23 +85,23 @@
       <entry key="W1" value="0.0" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.8950250709279725" />
-      <entry key="MS500" value="0.9780634738383717" />
-      <entry key="S2" value="0.9991262388812746" />
-      <entry key="S5" value="1.1514901211138393" />
-      <entry key="S10" value="1.6116755807148753" />
-      <entry key="S30" value="2.9487915407152414" />
-      <entry key="S60" value="3.7513843651447316" />
-      <entry key="M2" value="4.3046923793358465" />
-      <entry key="M5" value="4.710829010398776" />
-      <entry key="M10" value="5.69814009082704" />
-      <entry key="M15" value="9.27071660979144" />
-      <entry key="M30" value="30.51522285467645" />
-      <entry key="H1" value="73.80965144129995" />
-      <entry key="H2" value="123.06195671868069" />
-      <entry key="H4" value="161.71246042128504" />
-      <entry key="D1" value="204.86679351915046" />
-      <entry key="W1" value="213.51806397357268" />
+      <entry key="MS100" value="0.8950488491942271" />
+      <entry key="MS500" value="1.105694971444478" />
+      <entry key="S2" value="1.887255308350185" />
+      <entry key="S5" value="2.4283440421952647" />
+      <entry key="S10" value="2.6867880853753277" />
+      <entry key="S30" value="2.8887648327886586" />
+      <entry key="S60" value="2.94347799884731" />
+      <entry key="M2" value="2.9737936120971296" />
+      <entry key="M5" value="3.219285394304857" />
+      <entry key="M10" value="4.255348380563188" />
+      <entry key="M15" value="6.388159049472237" />
+      <entry key="M30" value="21.45617983041841" />
+      <entry key="H1" value="60.40385565017548" />
+      <entry key="H2" value="111.52741939281194" />
+      <entry key="H4" value="154.86286475126772" />
+      <entry key="D1" value="205.7323008436086" />
+      <entry key="W1" value="216.19883173314668" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{

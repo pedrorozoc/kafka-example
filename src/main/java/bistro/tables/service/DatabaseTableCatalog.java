@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigInteger;
 import java.util.List;
 
 @Service
@@ -18,7 +17,7 @@ class DatabaseTableCatalog implements TableCatalog {
 
     @Override
     @Transactional(propagation = Propagation.MANDATORY)
-    public List<Long> lockCandidates(BigInteger partySize) {
+    public List<Long> lockCandidates(int partySize) {
         return tables.lockCandidates(partySize);
     }
 }

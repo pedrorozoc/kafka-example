@@ -6,10 +6,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import tools.jackson.databind.node.ObjectNode;
 
-import java.math.BigInteger;
-import java.time.OffsetDateTime;
-import java.util.Map;
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.util.TimeZone;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -76,21 +74,9 @@ class CreateReservationHttpTest extends ReservationTestDatabase {
         assertThat(reservations()).containsExactly(stored(result, 1L, storedSize));
     }
 
-    @Test
-    void rejectsEquivalentOffsetsAcrossMidnight() {
-        table(1, 4);
-        Created first = created(START, "4");
-        Created equivalent = created("2030-06-13T00:00:00Z", "4");
-
-        assertThat(first.status()).isEqualTo("CONFIRMED");
-        assertThat(equivalent.status()).isEqualTo("REJECTED");
-        assertThat(reservations()).containsExactlyInAnyOrder(
-                stored(first, 1L, "4"), stored(equivalent, null, "4"));
-    }
-
     @ParameterizedTest
-    @ValueSource(strings = {"2030-06-12T19:01:00-05:00", "2030-06-13T19:00:00-05:00"})
-    void reusesTheSameTableAtADifferentInstant(String nextStart) {
+    @ValueSource(strings = {"2030-06-12T19:01", "2030-06-13T19:00"})
+    void reusesTheSameTableAtADifferentMinute(String nextStart) {
         table(1, 4);
         assertThat(created(START, "4").status()).isEqualTo("CONFIRMED");
         assertThat(created(nextStart, "4").status()).isEqualTo("CONFIRMED");
@@ -98,31 +84,23 @@ class CreateReservationHttpTest extends ReservationTestDatabase {
     }
 
     @Test
-    void preservesMicrosecondsAndAcceptsExplicitOffsetsAcrossTheFullRange() {
+    void storesAndComparesLocalMinutesIndependentlyOfTheJvmTimeZone() {
         table(1, 4);
-        assertThat(created("2030-06-12t19:00:00.0000011234-05:00", "4").status()).isEqualTo("CONFIRMED");
-        assertThat(created("2030-06-13T23:59:00.000001+23:59", "4").status()).isEqualTo("CONFIRMED");
-        assertThat(created("2030-06-13T23:59:00.000001123400+23:59", "4").status()).isEqualTo("REJECTED");
-        assertThat(reservations()).allSatisfy(row ->
-                assertThat(row.time()).isEqualTo(OffsetDateTime.parse("2030-06-13T00:00:00.000001Z")));
-    }
+        TimeZone original = TimeZone.getDefault();
+        try {
+            TimeZone.setDefault(TimeZone.getTimeZone("America/New_York"));
+            String localMinute = "2030-03-10T02:30";
 
-    @Test
-    void distinguishesSubmicrosecondInstantsAndRejectsEquivalentRemainders() {
-        table(1, 4);
-        Created first = created("2030-06-12T19:00:00.0000009Z", "4");
-        Created distinct = created("2030-06-12T19:00:00.0000001Z", "4");
-        Created equivalent = created("2030-06-12T19:00:00.0000009000Z", "4");
-
-        assertThat(first.status()).isEqualTo("CONFIRMED");
-        assertThat(distinct.status()).isEqualTo("CONFIRMED");
-        assertThat(equivalent.status()).isEqualTo("REJECTED");
-        assertThat(reservations()).filteredOn(row -> row.tableId() != null)
-                .extracting(StoredReservation::code).containsExactlyInAnyOrder(first.code(), distinct.code());
-        assertThat(sql.query("SELECT reservation_code, reservation_time_remainder FROM reservation",
-                (row, number) -> Map.entry(row.getObject("reservation_code", UUID.class), row.getString(2))))
-                .containsExactlyInAnyOrder(Map.entry(first.code(), "9"), Map.entry(distinct.code(), "1"),
-                        Map.entry(equivalent.code(), "9"));
+            assertThat(created(localMinute, "4").status()).isEqualTo("CONFIRMED");
+            assertThat(created(localMinute, "4").status()).isEqualTo("REJECTED");
+            assertThat(created("2030-03-10T03:30", "4").status()).isEqualTo("CONFIRMED");
+            assertThat(reservations()).filteredOn(row -> row.tableId() != null)
+                    .extracting(StoredReservation::time)
+                    .containsExactlyInAnyOrder(LocalDateTime.parse(localMinute),
+                            LocalDateTime.parse("2030-03-10T03:30"));
+        } finally {
+            TimeZone.setDefault(original);
+        }
     }
 
     @ParameterizedTest(name = "[{index}]")
@@ -149,8 +127,8 @@ class CreateReservationHttpTest extends ReservationTestDatabase {
     @Test
     void reusesTheSameTableAfterMidnight() {
         table(1, 4);
-        assertThat(created("2030-06-12T23:30:00-05:00", "4").status()).isEqualTo("CONFIRMED");
-        assertThat(created("2030-06-13T00:30:00-05:00", "4").status()).isEqualTo("CONFIRMED");
+        assertThat(created("2030-06-12T23:30", "4").status()).isEqualTo("CONFIRMED");
+        assertThat(created("2030-06-13T00:30", "4").status()).isEqualTo("CONFIRMED");
         assertThat(reservations()).extracting(StoredReservation::tableId).containsExactly(1L, 1L);
     }
 
@@ -190,7 +168,12 @@ class CreateReservationHttpTest extends ReservationTestDatabase {
                 new InvalidRequest(request("ayer", "4"), INVALID_JSON),
                 new InvalidRequest(request("2030-06-12T19:00:00", "4"), INVALID_JSON),
                 new InvalidRequest(request("2030-06-12T19:00Z", "4"), INVALID_JSON),
-                new InvalidRequest(request("2030-02-30T19:00:00Z", "4"), INVALID_JSON),
+                new InvalidRequest(request("2030-02-30T19:00", "4"), INVALID_JSON),
+                new InvalidRequest(request("2030-06-12T24:00", "4"), INVALID_JSON),
+                new InvalidRequest(request("2030-06-12t19:00", "4"), INVALID_JSON),
+                new InvalidRequest(request("2030-06-12T19:00:00.1", "4"), INVALID_JSON),
+                new InvalidRequest(request("2030-06-12T19:00-05:00", "4"), INVALID_JSON),
+                new InvalidRequest(request("2030-06-12T19:00 ", "4"), INVALID_JSON),
                 new InvalidRequest(request(START, "2.5"), INVALID_JSON),
                 new InvalidRequest(request(START, "13.0000000000001"), INVALID_JSON),
                 new InvalidRequest(request(START, "1e-2147483649"), INVALID_JSON),
@@ -227,7 +210,7 @@ class CreateReservationHttpTest extends ReservationTestDatabase {
 
     private StoredReservation stored(Created created, Long tableId, String size) {
         return new StoredReservation(created.code(), created.status(), tableId, "Ana Pérez", "ana@example.org",
-                OffsetDateTime.parse("2030-06-13T00:00:00Z"), new BigInteger(size));
+                LocalDateTime.parse(START), Integer.parseInt(size));
     }
 
     record InvalidRequest(String body, String detail) {

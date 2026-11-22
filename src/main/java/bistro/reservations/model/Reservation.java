@@ -1,7 +1,6 @@
 package bistro.reservations.model;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -12,7 +11,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import org.springframework.data.domain.Persistable;
 
-import java.math.BigInteger;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -28,11 +27,11 @@ public class Reservation implements Persistable<UUID> {
     @Column(nullable = false, columnDefinition = "text")
     private String customerEmail;
 
-    @Embedded
-    private ReservationStart reservationTime;
+    @Column(nullable = false)
+    private LocalDateTime reservationTime;
 
-    @Column(nullable = false, columnDefinition = "numeric")
-    private BigInteger partySize;
+    @Column(nullable = false)
+    private Integer partySize;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, columnDefinition = "text")
@@ -46,7 +45,7 @@ public class Reservation implements Persistable<UUID> {
     protected Reservation() {
     }
 
-    public Reservation(String customerName, String customerEmail, ReservationStart reservationTime, BigInteger partySize) {
+    public Reservation(String customerName, String customerEmail, LocalDateTime reservationTime, Integer partySize) {
         this.reservationCode = UUID.randomUUID();
         this.customerName = customerName;
         this.customerEmail = customerEmail;
@@ -72,7 +71,7 @@ public class Reservation implements Persistable<UUID> {
         }
     }
 
-    public ReservationStart getReservationTime() {
+    public LocalDateTime getReservationTime() {
         return reservationTime;
     }
 

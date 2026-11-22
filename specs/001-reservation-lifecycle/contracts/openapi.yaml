@@ -10,8 +10,7 @@ paths:
       summary: Solicitar una mesa para una fecha y hora de llegada
       description: >-
         Una mesa con capacidad suficiente está disponible cuando carece de una reserva
-        confirmada para el mismo instante. Dos fechas y horas con desplazamientos
-        distintos compiten por la mesa si representan el mismo instante.
+        confirmada para la misma fecha y minuto local del restaurante.
       requestBody:
         required: true
         content:
@@ -73,17 +72,21 @@ components:
         customerEmail: { type: string, format: email, example: ana@example.org }
         reservationTime:
           type: string
-          format: date-time
-          pattern: '(?:[Zz]|[+-][0-9]{2}:[0-9]{2})$'
+          minLength: 16
+          maxLength: 16
+          pattern: '^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]$'
           description: >-
-            Fecha y hora de llegada en formato RFC 3339 con Z o desplazamiento UTC
-            explícito. Es el único dato temporal de la reserva.
-          example: '2030-06-12T19:00:00-05:00'
+            Fecha de calendario válida y hora local del restaurante en formato
+            YYYY-MM-DDTHH:mm, sin segundos, fracciones ni zona horaria.
+          example: '2030-06-12T19:00'
         partySize:
           type: integer
           minimum: 1
           maximum: 12
-          description: Cantidad de comensales. Si supera 12, la solicitud devuelve 400 antes de crear la reserva o consultar disponibilidad.
+          description: >-
+            Cantidad de comensales entre 1 y 12 inclusive. Se aceptan números JSON
+            de valor entero, como 12.0. Una cantidad inválida produce 400 antes
+            de crear la reserva o consultar disponibilidad.
           example: 4
     FinalStatus:
       type: string
@@ -117,6 +120,8 @@ components:
         application/problem+json:
           schema: { $ref: '#/components/schemas/Problem' }
           examples:
+            invalidReservationTime:
+              value: { title: Solicitud inválida, status: 400, detail: Se requiere un cuerpo JSON válido con los tipos y formatos esperados. }
             nonpositivePartySize:
               value: { title: Solicitud inválida, status: 400, detail: La cantidad de comensales debe ser un entero positivo. }
             partySizeAboveMaximum:

@@ -1,14 +1,13 @@
 package bistro.reservations.service;
 
 import bistro.reservations.model.Reservation;
-import bistro.reservations.model.ReservationStart;
 import bistro.reservations.repository.ReservationRepository;
 import bistro.tables.service.TableCatalog;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigInteger;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -22,8 +21,8 @@ public class CreateReservationService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public Reservation create(String name, String email, ReservationStart start, BigInteger partySize) {
-        Reservation reservation = new Reservation(name, email, start, partySize);
+    public Reservation create(String name, String email, LocalDateTime reservationTime, Integer partySize) {
+        Reservation reservation = new Reservation(name, email, reservationTime, partySize);
         List<Long> candidates = tables.lockCandidates(partySize);
         if (candidates.isEmpty()) {
             reservation.reject();
@@ -34,9 +33,8 @@ public class CreateReservationService {
     }
 
     private void resolve(Reservation reservation, List<Long> candidates) {
-        ReservationStart start = reservation.getReservationTime();
         // La segunda sentencia ve las confirmaciones realizadas durante la espera por los bloqueos.
-        var occupied = reservations.findOccupiedTableIds(candidates, start.microsecond(), start.remainder());
+        var occupied = reservations.findOccupiedTableIds(candidates, reservation.getReservationTime());
         candidates.stream()
                 .filter(id -> !occupied.contains(id))
                 .findFirst()
