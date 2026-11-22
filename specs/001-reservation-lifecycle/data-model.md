@@ -16,13 +16,13 @@
 
 El DTO exige `@NotBlank` en nombre y email, `@Email` en email, `@NotNull` en la hora y `@NotNull @Positive @Max(12)` en la cantidad. El lector JSON admite números de valor entero, incluidas representaciones como `12.0` y `1.2e1`. El controlador valida antes de llamar al servicio. Una cantidad que supera 12 produce HTTP 400 y la solicitud termina antes de crear una reserva o consultar el catálogo. Una cantidad que cumple el rango y supera la capacidad de todas las mesas produce `REJECTED`.
 
-El esquema existente exige unicidad del código, nulabilidad conforme al modelo, cantidad positiva e integral, valores de estado válidos y equivalencia entre confirmación y mesa asignada. El índice por mesa y hora cubre las reservas confirmadas. El límite de entrada deja consultables los registros históricos de más de 12 y sus asignaciones confirmadas siguen ocupando la mesa durante la franja correspondiente.
+El esquema exige unicidad del código, cantidad positiva e integral, estados válidos y equivalencia entre confirmación y mesa asignada. El índice parcial `reservation_occupied_table_time_idx` acota por mesa y microsegundo en las reservas confirmadas. La consulta aplica la igualdad del resto decimal como filtro. Se conservan las filas existentes y las migraciones V1 a V3. Las reservas históricas, incluidas las de más de 12 comensales, conservan su fecha y hora, código, estado y asignación.
 
-## Mesa y franja
+## Mesa y disponibilidad por instante
 
 `tables` es dueño de `dining_table`, con `id` (bigint, clave primaria) y `capacity` (entero positivo obligatorio). Una mesa puede atender muchas reservas a lo largo del tiempo. Una reserva confirmada usa una sola mesa. El enlace se modela como una clave foránea escalar para mantener la separación entre dominios.
 
-La franja se deriva de `reservationTime` sumando 90 minutos al instante inicial. Usar un intervalo cerrado al inicio y abierto al final. Hay conflicto si **inicio existente < fin solicitado** e **inicio solicitado < fin existente**. Con duración fija, el repositorio puede buscar inicios estrictamente entre el inicio solicitado menos 90 minutos y el fin solicitado, en las mesas candidatas y con estado CONFIRMED. Cuando los microsegundos coinciden, la comparación conserva el orden de los dígitos restantes. Las reservas rechazadas nunca ocupan capacidad.
+`reservationTime` representa únicamente la fecha y hora de llegada. Una mesa candidata está asignada para el instante solicitado si existe una fila `CONFIRMED` para esa mesa con igualdad en `reservation_time` y en `reservation_time_remainder`. Los desplazamientos equivalentes se normalizan al mismo instante. Ceros finales en la fracción producen la misma representación canónica. Si cambia el resto dentro del mismo microsegundo, los instantes son distintos. Las reservas rechazadas carecen de mesa asignada.
 
 ## Transiciones y transacción
 
@@ -35,5 +35,5 @@ Los dos resultados son terminales. `PENDING` vive dentro del flujo de creación.
 
 1. El servicio de reservas abre una transacción PostgreSQL READ COMMITTED. Todos los asignadores siguen este protocolo.
 2. El servicio llama a `tables.service.TableCatalog.lockCandidates(partySize)` dentro de la misma transacción. El repositorio de mesas compara la capacidad con el tamaño completo del grupo y materializa los IDs con capacidad suficiente en orden ascendente por ID inmutable mediante `SELECT … ORDER BY id FOR UPDATE`. Espera por las filas bloqueadas y mantiene los bloqueos hasta el fin de la transacción.
-3. En una **segunda sentencia**, el repositorio de reservas lee las ocupaciones de esas mesas que se superponen. Así incorpora los commits producidos durante la espera. Candidatas vacías o todas ocupadas producen un rechazo. Cualquier candidata libre permite confirmar.
+3. En una **segunda sentencia**, el repositorio consulta los IDs con asignación confirmada en el instante exacto. Así incorpora los commits producidos durante la espera. Si la lista de candidatas está vacía, el servicio omite esa consulta y rechaza. Si todas están asignadas, también rechaza. Una candidata libre permite confirmar.
 4. Persistir la reserva final y hacer commit. Una espera por bloqueo o un fallo de escritura nunca se interpreta como falta de mesa. La consulta por código solo lee el estado definitivo guardado en la base.

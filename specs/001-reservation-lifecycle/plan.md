@@ -1,10 +1,10 @@
 # Implementation Plan — Ciclo de vida de una reserva
 
-**Rama Git** `master` · **Feature Spec Kit** `001-reservation-lifecycle` · **Fecha** 2026-11-21 · [Especificación](spec.md)
+**Rama Git** `master` · **Feature Spec Kit** `001-reservation-lifecycle` · **Fecha** 2026-11-22 · [Especificación](spec.md)
 
 ## Summary
 
-El POST admite cantidades enteras de 1 a 12 comensales. Las cantidades superiores a 12 reciben un error de validación en español antes de crear una reserva o consultar disponibilidad (FR-013). Las solicitudes válidas siguen el flujo transaccional y reciben un código con la decisión definitiva. El cliente puede recuperar el estado con su código, también para reservas anteriores al nuevo límite.
+Cada reserva tiene una sola fecha y hora de llegada. Una mesa con capacidad suficiente queda excluida solo si tiene una reserva confirmada para el mismo instante (FR-005 y FR-008). El servicio entregará al repositorio el instante canónico completo para comparar sus dos componentes por igualdad. El diseño reutiliza el bloqueo transaccional, el contrato HTTP y las columnas existentes. Las reservas ya registradas conservan su instante, código, estado y mesa (FR-014).
 
 ## Technical Context
 
@@ -14,8 +14,10 @@ El POST admite cantidades enteras de 1 a 12 comensales. Las cantidades superiore
 | Dependencias | Spring MVC, Data JPA, Bean Validation, MapStruct 1.6.3, driver JDBC PostgreSQL y Flyway con soporte PostgreSQL |
 | Datos | PostgreSQL 17, catálogo de mesas preexistente y reservas persistentes |
 | Pruebas | JUnit Jupiter, pruebas HTTP con Spring Boot y transacciones independientes contra PostgreSQL mediante Testcontainers o una base de pruebas configurada |
-| Plataforma y alcance | Servicio HTTP para un restaurante. Las dos operaciones públicas funcionan sin cuenta. La decisión síncrona y la exclusión de solapes son requisitos funcionales. |
-| Base del proyecto | El backend, las migraciones y las pruebas HTTP ya existen. El cambio usa el DTO, la validación MVC y el manejo de errores actuales. |
+| Plataforma y alcance | Servicio HTTP para un restaurante. Las dos operaciones públicas funcionan sin cuenta. Cada POST válido devuelve la decisión definitiva en la misma solicitud. |
+| Base del proyecto | `ReservationStart` conserva el instante normalizado a UTC y los dígitos submicrosegundo. El cambio se concentra en `CreateReservationService`, `ReservationRepository` y las pruebas de reservas. |
+| Restricciones de integridad | Una confirmación como máximo por mesa e instante. Las filas previas siguen siendo consultables y cuentan para la disponibilidad en el instante almacenado. |
+| Objetivos de rendimiento | La especificación acota el trabajo a la corrección funcional de la disponibilidad y la concurrencia. |
 
 ## Constitution Check
 
@@ -26,7 +28,7 @@ La revisión de entrada y la revisión posterior a la fase 1 cumplen los seis pr
 | I. Capas | Usar exactamente `controller`, `service`, `repository` y `model` dentro de cada módulo | `controller` contiene adaptadores HTTP, DTOs y mappers MapStruct. `service` decide y orquesta. `repository` contiene interfaces Spring Data. `model` contiene entidades JPA y enums. |
 | II. Monolito modular | Un artefacto y límites por dominio | `reservations` solicita los IDs candidatos por la interfaz pública de `tables`. Cada módulo accede a su propio repositorio. Notificaciones queda fuera de la feature. |
 | III. HTTP y mapeo | Dos rutas versionadas con DTOs | [Contrato](contracts/openapi.yaml) con DTOs de entrada, creación y consulta. MapStruct proyecta entidades a respuestas que contienen solo campos públicos. |
-| IV. Validación y errores | Validación antes del servicio y tratamiento global | El DTO incorpora `@Max(12)`. El controlador valida mediante `@Valid` antes de iniciar la creación. `@RestControllerAdvice` devuelve ProblemDetail conforme a RFC 7807, incluido el 400 por exceder el máximo. |
+| IV. Validación y errores | Validación antes del servicio y tratamiento global | El controlador conserva `@Valid`, el lector de fecha y hora y las restricciones de entrada, incluido `@Max(12)`. El tratamiento global conserva los ProblemDetail en español. |
 | V. Idioma | Identificadores en inglés, textos en español | Campos y estados en inglés en el contrato. Títulos, detalles, mensajes de excepción, logs y comentarios en español. |
 | VI. Dependencias entre módulos | Encapsular dependencias volátiles detrás de una interfaz del proveedor | `tables.service.TableCatalog` es la interfaz pública. `DatabaseTableCatalog` tiene visibilidad de paquete y encapsula el mecanismo de persistencia y bloqueo. |
 
@@ -58,15 +60,18 @@ El manejador global vive en el paquete raíz de la aplicación. `reservations.se
 
 ### Cambios previstos
 
-1. Añadir `@Max(12)` a `CreateReservationRequest.partySize` y usar el detalle en español definido en el [contrato](contracts/openapi.yaml). Conservar la validación de obligatoriedad y positividad y la lectura de valores enteros mediante el deserializador actual.
-2. Para valores válidos, conservar la decisión transaccional descrita en el [modelo](data-model.md). El máximo se aplica al DTO de creación. El esquema existente permite consultar reservas anteriores y conservar su ocupación.
-3. Actualizar los casos de `CreateReservationHttpTest` que esperan persistencia para cantidades superiores a 12. Verificar el tamaño máximo con y sin una mesa apta. En una prueba MVC enfocada, enviar 13 y comprobar que el servicio de creación no recibe llamadas. Ejecutar la [guía](quickstart.md) y la suite de regresión.
+1. Eliminar el cálculo de duración en `CreateReservationService`. Mantener el bloqueo ordenado de las mesas candidatas bajo `READ COMMITTED` y consultar las asignaciones en una sentencia posterior al bloqueo.
+2. Actualizar `ReservationRepository.findOccupiedTableIds` para consultar las candidatas confirmadas por igualdad en `reservation_time` y `reservation_time_remainder`. Reutilizar la representación de `ReservationStart`, el índice parcial y las migraciones aplicadas.
+3. Actualizar los casos de `CreateReservationHttpTest` que dependen de la regla anterior y probar las reservas históricas. Ejecutar `ReservationTransactionHttpTest` para verificar espera, visibilidad después del commit y rollback. Validar el [contrato](contracts/openapi.yaml) con la [guía](quickstart.md) y ejecutar `./mvnw verify`.
+
+Si varias instancias comparten la base, coordinar el cambio de las que atienden el POST para aplicar la misma regla de disponibilidad. La actualización reutiliza el esquema de las instalaciones existentes.
 
 ### Cobertura de aceptación
 
 | Requisitos | Comprobación prevista |
 | --- | --- |
 | FR-001 a FR-004, FR-011 | POST válido sin credenciales, código único y estado final consultable. Entrada inválida, incluida cantidad fraccionaria, devuelve 400 sin cambios. |
-| FR-005 a FR-009 | Capacidad exacta, insuficiente y catálogo vacío. Una mesa ocupada y otra apta libre. Solape parcial, adyacencia, medianoche y solicitudes simultáneas. Verificar en persistencia la relación entre mesa y estado. |
+| FR-005 a FR-009, SC-003 | Capacidad exacta, insuficiente y catálogo vacío. Otra mesa libre cuando la primera está asignada. Instante igual, instantes distintos en una misma fecha o en fechas distintas, desplazamientos equivalentes que cruzan medianoche y precisión submicrosegundo. Dos POST simultáneos para una única mesa y el mismo instante producen una confirmación y un rechazo. Verificar el rollback y la relación entre mesa y estado. |
 | FR-010 y FR-012 | GET repetido para ambos resultados, código desconocido y formato e idioma de errores. Verificar que la consulta conserva la decisión original. |
 | FR-013, historia 1 escenario 9, SC-005 | Enviar 13 con una mesa libre de capacidad suficiente y verificar 400 en español, sin código, fila nueva ni llamada al servicio de creación. Verificar que 12 sigue obteniendo 201 con el resultado que corresponda a la disponibilidad. Consultar por código una reserva histórica superior a 12. |
+| FR-014, historia 2 escenario 5, SC-006 | Preparar reservas existentes, incluidas filas con el resto decimal vacío por defecto. Consultar los códigos originales y verificar que la confirmada bloquea el instante exacto y permite reutilizar la mesa para un instante distinto. Comparar fecha y hora, código, estado y mesa antes y después. |

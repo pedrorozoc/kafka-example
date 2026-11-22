@@ -1,6 +1,6 @@
 # Validar el ciclo de reserva por HTTP
 
-Esta guía valida el ciclo de reserva con FR-013 implementado. Usar Java 25, el Maven Wrapper del proyecto, Docker, Bash, curl y jq. Los comandos parten de la raíz del repositorio. El ejemplo usa una base desechable exclusiva para la prueba. El catálogo comienza con una mesa de cuatro plazas.
+Esta guía valida el ciclo de reserva con disponibilidad por instante una vez implementado el plan. Usar Java 25, el Maven Wrapper del proyecto, Docker, Bash, curl y jq. Los comandos parten de la raíz del repositorio. El ejemplo usa una base desechable exclusiva para la prueba. El catálogo comienza con una mesa de cuatro plazas.
 
 El [contrato HTTP](contracts/openapi.yaml) define las respuestas y los códigos de error. El [modelo de datos](data-model.md) define qué asignaciones comprobar en PostgreSQL.
 
@@ -38,9 +38,9 @@ Ejecutar los comandos en la misma terminal y en este orden. Los encabezados apar
 ```bash
 first=$(post '2030-06-12T19:00:00-05:00' 4)
 jq -e '.status == "CONFIRMED"' <<< "$first"
-second=$(post '2030-06-12T20:00:00-05:00' 4)
+second=$(post '2030-06-13T00:00:00Z' 4)
 jq -e '.status == "REJECTED"' <<< "$second"
-post '2030-06-12T20:30:00-05:00' 4 | jq -e '.status == "CONFIRMED"'
+post '2030-06-12T19:01:00-05:00' 4 | jq -e '.status == "CONFIRMED"'
 for result in "$first" "$second"; do
   code=$(jq -er .reservationCode <<< "$result")
   expected=$(jq -er .status <<< "$result")
@@ -55,6 +55,38 @@ Las últimas dos respuestas deben ser 400 y 404 con `application/problem+json` y
 ```bash
 docker exec bistro-reservation-check psql -U bistro -d bistro \
   -c 'SELECT status, assigned_table_id FROM reservation ORDER BY reservation_time'
+```
+
+### Comprobar precisión y reservas existentes
+
+Con una sola mesa, estos POST prueban dos instantes distintos dentro del mismo microsegundo y una representación equivalente del primero.
+
+```bash
+post '2030-06-18T19:00:00.0000009Z' 4 | jq -e '.status == "CONFIRMED"'
+post '2030-06-18T19:00:00.0000001Z' 4 | jq -e '.status == "CONFIRMED"'
+post '2030-06-18T19:00:00.0000009000Z' 4 | jq -e '.status == "REJECTED"'
+```
+
+En la base desechable, preparar una reserva histórica que usa el valor por defecto del resto decimal. Comparar la misma fila antes y después de las solicitudes.
+
+```bash
+(
+  set -euo pipefail
+  legacy_code=815c306e-0ff9-4f34-8050-ed972d1ffcf5
+  db() {
+    docker exec -i bistro-reservation-check psql -U bistro -d bistro -v ON_ERROR_STOP=1 "$@"
+  }
+  db -c "INSERT INTO reservation
+    (reservation_code, customer_name, customer_email, reservation_time, party_size, status, assigned_table_id)
+    VALUES ('$legacy_code', 'Ana Pérez', 'ana@example.org', '2030-06-19T19:00:00Z', 4, 'CONFIRMED', 1)"
+  legacy_row="SELECT reservation_code, reservation_time, reservation_time_remainder, status, assigned_table_id
+    FROM reservation WHERE reservation_code = '$legacy_code'"
+  before=$(db -At -c "$legacy_row")
+  curl -fsS "$url/$legacy_code" | jq -e '. == {status:"CONFIRMED"}'
+  post '2030-06-19T19:00:00Z' 4 | jq -e '.status == "REJECTED"'
+  post '2030-06-19T19:01:00Z' 4 | jq -e '.status == "CONFIRMED"'
+  test "$before" = "$(db -At -c "$legacy_row")"
+)
 ```
 
 ### Probar solicitudes simultáneas
@@ -91,13 +123,13 @@ El POST devuelve 201. Las mesas de cuatro plazas siguen libres, incluso cuando l
 
 ### Validar el máximo de 12 comensales
 
-Con las mesas actuales, un grupo de 12 recibe `201 REJECTED`. Añade una mesa de 13 plazas y envía una solicitud de 13 para la misma franja. Debe devolver 400 en formato `application/problem+json`, con título y detalle en español, sin `Location` ni fila nueva. En la misma franja, un grupo de 12 debe recibir `201 CONFIRMED` con la nueva mesa.
+Con las mesas actuales, un grupo de 12 recibe `201 REJECTED`. Añade una mesa de 13 plazas y envía una solicitud de 13 para el mismo instante. Debe devolver 400 en formato `application/problem+json`, con título y detalle en español, sin `Location` ni fila nueva. Para ese mismo instante, un grupo de 12 debe recibir `201 CONFIRMED` con la nueva mesa.
 
 ```bash
 (
   set -euo pipefail
-  slot='2030-06-17T19:00:00Z'
-  post "$slot" 12 | jq -e '.status == "REJECTED"'
+  instant='2030-06-17T19:00:00Z'
+  post "$instant" 12 | jq -e '.status == "REJECTED"'
   docker exec bistro-reservation-check psql -U bistro -d bistro -v ON_ERROR_STOP=1 \
     -c 'INSERT INTO dining_table (id, capacity) VALUES (3, 13)'
   count_reservations() {
@@ -106,7 +138,7 @@ Con las mesas actuales, un grupo de 12 recibe `201 REJECTED`. Añade una mesa de
   }
   before=$(count_reservations)
   for size in 13 2147483648; do
-    post "$slot" "$size" 2>"$results/invalid-size.headers" | jq -e '
+    post "$instant" "$size" 2>"$results/invalid-size.headers" | jq -e '
       .status == 400 and .title == "Solicitud inválida"
       and .detail == "La cantidad de comensales no puede superar las 12 personas."
       and (has("reservationCode") | not)'
@@ -118,9 +150,9 @@ Con las mesas actuales, un grupo de 12 recibe `201 REJECTED`. Añade una mesa de
     fi
     test "$before" = "$(count_reservations)"
   done
-  post "$slot" 12 | jq -e '.status == "CONFIRMED"'
+  post "$instant" 12 | jq -e '.status == "CONFIRMED"'
   docker exec bistro-reservation-check psql -U bistro -d bistro -At \
-    -c "SELECT assigned_table_id FROM reservation WHERE reservation_time = '$slot' AND status = 'CONFIRMED'" \
+    -c "SELECT assigned_table_id FROM reservation WHERE reservation_time = '$instant' AND status = 'CONFIRMED'" \
     | grep -qx '3'
 )
 ```
@@ -135,7 +167,7 @@ Las pruebas de integración usan PostgreSQL de Testcontainers y fixtures aislada
 
 - Para cada campo obligatorio, omitirlo y enviarlo como `null`. Probar también nombre en blanco, email inválido, hora ilegible o sin desplazamiento, cantidad negativa, fraccionaria o enviada como cadena. Para cada entrada inválida, verificar 400 en español y el mismo número de reservas y asignaciones antes y después.
 - Probar los límites 1, 12 y 13. Conservar el tratamiento de números JSON de valor entero, incluido `12.0`, y comprobar 400 para `13.0` y los enteros grandes que antes se guardaban. Una prueba MVC debe verificar que el servicio de creación recibe cero llamadas al enviar 13. Una reserva histórica superior a 12, preparada en la base de pruebas, debe seguir devolviendo su estado al consultarla por código.
-- Probar catálogo vacío, una mesa ocupada y otra apta libre, offsets equivalentes y cruce de medianoche. Una reserva a las 23:30 debe impedir otra a las 00:30 y permitirla a la 01:00 del día siguiente con la misma mesa.
+- Probar catálogo vacío y una mesa asignada con otra apta disponible. Una mesa con reserva a las 23:30 debe poder confirmarse a las 00:30 del día siguiente en el mismo desplazamiento. Verificar aparte que desplazamientos distintos que representan el mismo instante producen conflicto.
 - Coordinar dos conexiones independientes en el punto de bloqueo, con una sola mesa apta. Comprobar que la segunda lee la decisión de la primera después del commit. Simular además un fallo de escritura y verificar que el rollback deja la mesa disponible.
 
 Detener el servicio con Ctrl+C en la primera terminal y liberar la base desechable con `docker stop bistro-reservation-check`. Para repetir los ejemplos con las mismas fechas, comenzar con un contenedor nuevo.
