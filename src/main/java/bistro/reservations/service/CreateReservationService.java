@@ -9,13 +9,10 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
-import java.time.Duration;
 import java.util.List;
 
 @Service
 public class CreateReservationService {
-    private static final Duration SLOT_DURATION = Duration.ofMinutes(90);
-
     private final ReservationRepository reservations;
     private final TableCatalog tables;
 
@@ -39,8 +36,7 @@ public class CreateReservationService {
     private void resolve(Reservation reservation, List<Long> candidates) {
         ReservationStart start = reservation.getReservationTime();
         // La segunda sentencia ve las confirmaciones realizadas durante la espera por los bloqueos.
-        var occupied = reservations.findOccupiedTableIds(candidates,
-                start.microsecond().minus(SLOT_DURATION), start.microsecond().plus(SLOT_DURATION), start.remainder());
+        var occupied = reservations.findOccupiedTableIds(candidates, start.microsecond(), start.remainder());
         candidates.stream()
                 .filter(id -> !occupied.contains(id))
                 .findFirst()

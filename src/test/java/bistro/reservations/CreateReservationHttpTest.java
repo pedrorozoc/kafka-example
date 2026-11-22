@@ -8,6 +8,8 @@ import tools.jackson.databind.node.ObjectNode;
 
 import java.math.BigInteger;
 import java.time.OffsetDateTime;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -75,40 +77,52 @@ class CreateReservationHttpTest extends ReservationTestDatabase {
     }
 
     @Test
-    void comparesInstantsAndAllowsAdjacentReservationsInEitherDirection() {
+    void rejectsEquivalentOffsetsAcrossMidnight() {
+        table(1, 4);
+        Created first = created(START, "4");
+        Created equivalent = created("2030-06-13T00:00:00Z", "4");
+
+        assertThat(first.status()).isEqualTo("CONFIRMED");
+        assertThat(equivalent.status()).isEqualTo("REJECTED");
+        assertThat(reservations()).containsExactlyInAnyOrder(
+                stored(first, 1L, "4"), stored(equivalent, null, "4"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"2030-06-12T19:01:00-05:00", "2030-06-13T19:00:00-05:00"})
+    void reusesTheSameTableAtADifferentInstant(String nextStart) {
         table(1, 4);
         assertThat(created(START, "4").status()).isEqualTo("CONFIRMED");
-        assertThat(created("2030-06-13T00:00:00Z", "4").status()).isEqualTo("REJECTED");
-        assertThat(created("2030-06-12T20:00:00-05:00", "4").status()).isEqualTo("REJECTED");
-        assertThat(created("2030-06-12T18:30:00-05:00", "4").status()).isEqualTo("REJECTED");
-        assertThat(created("2030-06-12T17:30:00-05:00", "4").status()).isEqualTo("CONFIRMED");
-        assertThat(created("2030-06-12T20:30:00-05:00", "4").status()).isEqualTo("CONFIRMED");
-        assertThat(reservations()).filteredOn(row -> row.tableId() != null).hasSize(3);
+        assertThat(created(nextStart, "4").status()).isEqualTo("CONFIRMED");
+        assertThat(reservations()).extracting(StoredReservation::tableId).containsExactly(1L, 1L);
     }
 
     @Test
     void preservesMicrosecondsAndAcceptsExplicitOffsetsAcrossTheFullRange() {
         table(1, 4);
         assertThat(created("2030-06-12t19:00:00.0000011234-05:00", "4").status()).isEqualTo("CONFIRMED");
-        assertThat(created("2030-06-14T00:00:00.000001+23:59", "4").status()).isEqualTo("REJECTED");
-        assertThat(reservations()).filteredOn(row -> row.status().equals("CONFIRMED")).singleElement()
-                .satisfies(row -> assertThat(row.time()).isEqualTo(OffsetDateTime.parse("2030-06-13T00:00:00.000001Z")));
+        assertThat(created("2030-06-13T23:59:00.000001+23:59", "4").status()).isEqualTo("CONFIRMED");
+        assertThat(created("2030-06-13T23:59:00.000001123400+23:59", "4").status()).isEqualTo("REJECTED");
+        assertThat(reservations()).allSatisfy(row ->
+                assertThat(row.time()).isEqualTo(OffsetDateTime.parse("2030-06-13T00:00:00.000001Z")));
     }
 
     @Test
-    void rejectsSubmicrosecondOverlapAndAcceptsExactAdjacency() {
+    void distinguishesSubmicrosecondInstantsAndRejectsEquivalentRemainders() {
         table(1, 4);
         Created first = created("2030-06-12T19:00:00.0000009Z", "4");
-        Created overlapping = created("2030-06-12T20:30:00.0000001Z", "4");
-        Created adjacent = created("2030-06-12T20:30:00.0000009000Z", "4");
+        Created distinct = created("2030-06-12T19:00:00.0000001Z", "4");
+        Created equivalent = created("2030-06-12T19:00:00.0000009000Z", "4");
 
         assertThat(first.status()).isEqualTo("CONFIRMED");
-        assertThat(overlapping.status()).isEqualTo("REJECTED");
-        assertThat(adjacent.status()).isEqualTo("CONFIRMED");
+        assertThat(distinct.status()).isEqualTo("CONFIRMED");
+        assertThat(equivalent.status()).isEqualTo("REJECTED");
         assertThat(reservations()).filteredOn(row -> row.tableId() != null)
-                .extracting(StoredReservation::code).containsExactlyInAnyOrder(first.code(), adjacent.code());
-        assertThat(sql.queryForList("SELECT reservation_time_remainder FROM reservation", String.class))
-                .containsExactlyInAnyOrder("9", "1", "9");
+                .extracting(StoredReservation::code).containsExactlyInAnyOrder(first.code(), distinct.code());
+        assertThat(sql.query("SELECT reservation_code, reservation_time_remainder FROM reservation",
+                (row, number) -> Map.entry(row.getObject("reservation_code", UUID.class), row.getString(2))))
+                .containsExactlyInAnyOrder(Map.entry(first.code(), "9"), Map.entry(distinct.code(), "1"),
+                        Map.entry(equivalent.code(), "9"));
     }
 
     @ParameterizedTest(name = "[{index}]")
@@ -133,11 +147,11 @@ class CreateReservationHttpTest extends ReservationTestDatabase {
     }
 
     @Test
-    void durationContinuesAcrossMidnight() {
+    void reusesTheSameTableAfterMidnight() {
         table(1, 4);
         assertThat(created("2030-06-12T23:30:00-05:00", "4").status()).isEqualTo("CONFIRMED");
-        assertThat(created("2030-06-13T00:30:00-05:00", "4").status()).isEqualTo("REJECTED");
-        assertThat(created("2030-06-13T01:00:00-05:00", "4").status()).isEqualTo("CONFIRMED");
+        assertThat(created("2030-06-13T00:30:00-05:00", "4").status()).isEqualTo("CONFIRMED");
+        assertThat(reservations()).extracting(StoredReservation::tableId).containsExactly(1L, 1L);
     }
 
     @ParameterizedTest

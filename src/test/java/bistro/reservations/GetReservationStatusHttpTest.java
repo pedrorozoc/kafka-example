@@ -38,6 +38,29 @@ class GetReservationStatusHttpTest extends ReservationTestDatabase {
         assertThat(reservations()).isEqualTo(before);
     }
 
+    @Test
+    void preservesAHistoricalReservationAndItsAssignmentAtTheStoredInstant() {
+        table(1, 4);
+        UUID historical = seed("CONFIRMED", 1L);
+        String historicalRow = """
+                SELECT reservation_code, reservation_time, reservation_time_remainder, status, assigned_table_id
+                FROM reservation WHERE reservation_code = ?
+                """;
+        var before = sql.queryForMap(historicalRow, historical);
+        assertThat(before).containsEntry("reservation_time_remainder", "");
+        assertStatus(historical, "CONFIRMED");
+
+        Created sameInstant = created(START, "4");
+        Created differentInstant = created("2030-06-12T19:01:00-05:00", "4");
+
+        assertThat(sameInstant.status()).isEqualTo("REJECTED");
+        assertThat(differentInstant.status()).isEqualTo("CONFIRMED");
+        assertThat(reservations()).filteredOn(row -> row.tableId() != null)
+                .extracting(StoredReservation::code).containsExactlyInAnyOrder(historical, differentInstant.code());
+        assertStatus(historical, "CONFIRMED");
+        assertThat(sql.queryForMap(historicalRow, historical)).isEqualTo(before);
+    }
+
     @ParameterizedTest
     @ValueSource(strings = {"00000000-0000-0000-0000-000000000000", "codigo-desconocido", "1-1-1-1-1"})
     void returnsSpanishNotFoundForMissingAndMalformedCodes(String code) {
