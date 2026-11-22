@@ -9,6 +9,7 @@ import jakarta.persistence.PostLoad;
 import jakarta.persistence.PostPersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import lombok.Data;
 import org.springframework.data.domain.Persistable;
 
 import java.time.LocalDateTime;
@@ -16,6 +17,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "reservation")
+@Data
 public class Reservation implements Persistable<UUID> {
     @Id
     @Column(updatable = false)

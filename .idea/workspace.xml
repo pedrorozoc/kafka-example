@@ -4,36 +4,26 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3b12ee5d-687a-4ada-9248-ec441db1de99" name="Changes" comment="">
+    <list default="true" id="3b12ee5d-687a-4ada-9248-ec441db1de99" name="Changes" comment="ajustes">
+      <change afterPath="$PROJECT_DIR$/src/main/java/bistro/shared/config/KafkaTopicConfig.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/specs/001-reservation-lifecycle/checklists/requirements.md" beforeDir="false" afterPath="$PROJECT_DIR$/specs/001-reservation-lifecycle/checklists/requirements.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/specs/001-reservation-lifecycle/contracts/openapi.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/specs/001-reservation-lifecycle/contracts/openapi.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/specs/001-reservation-lifecycle/data-model.md" beforeDir="false" afterPath="$PROJECT_DIR$/specs/001-reservation-lifecycle/data-model.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/specs/001-reservation-lifecycle/plan.md" beforeDir="false" afterPath="$PROJECT_DIR$/specs/001-reservation-lifecycle/plan.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/specs/001-reservation-lifecycle/quickstart.md" beforeDir="false" afterPath="$PROJECT_DIR$/specs/001-reservation-lifecycle/quickstart.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/specs/001-reservation-lifecycle/research.md" beforeDir="false" afterPath="$PROJECT_DIR$/specs/001-reservation-lifecycle/research.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/specs/001-reservation-lifecycle/spec.md" beforeDir="false" afterPath="$PROJECT_DIR$/specs/001-reservation-lifecycle/spec.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/specs/001-reservation-lifecycle/tasks.md" beforeDir="false" afterPath="$PROJECT_DIR$/specs/001-reservation-lifecycle/tasks.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/bistro/reservations/controller/CreateReservationRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bistro/reservations/controller/CreateReservationRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/bistro/reservations/controller/ReservationRequestJsonConfiguration.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bistro/reservations/controller/ReservationRequestJsonConfiguration.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/bistro/reservations/model/Reservation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bistro/reservations/model/Reservation.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/bistro/reservations/model/ReservationStart.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/bistro/reservations/repository/ReservationRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bistro/reservations/repository/ReservationRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bistro/reservations/model/ReservationCreated" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bistro/reservations/model/ReservationCreated.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/bistro/reservations/service/CreateReservationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bistro/reservations/service/CreateReservationService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/bistro/tables/repository/DiningTableRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bistro/tables/repository/DiningTableRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/bistro/tables/service/DatabaseTableCatalog.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bistro/tables/service/DatabaseTableCatalog.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/bistro/tables/service/TableCatalog.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bistro/tables/service/TableCatalog.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/bistro/reservations/CreateReservationHttpTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/bistro/reservations/CreateReservationHttpTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/bistro/reservations/CreateReservationValidationMvcTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/bistro/reservations/CreateReservationValidationMvcTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/bistro/reservations/GetReservationStatusHttpTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/bistro/reservations/GetReservationStatusHttpTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/bistro/reservations/ReservationTestDatabase.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/bistro/reservations/ReservationTestDatabase.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -47,61 +37,61 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.000025840672838" />
-      <entry key="MS500" value="1.1298341212552458" />
-      <entry key="S2" value="1.897038012944253" />
-      <entry key="S5" value="2.43337369651898" />
-      <entry key="S10" value="2.689574727126604" />
-      <entry key="S30" value="2.889765075440292" />
-      <entry key="S60" value="2.9439878218941598" />
-      <entry key="M2" value="2.974051227553572" />
-      <entry key="M5" value="3.219397726476802" />
-      <entry key="M10" value="4.255429040692417" />
-      <entry key="M15" value="6.388257834873743" />
-      <entry key="M30" value="21.45638267733339" />
-      <entry key="H1" value="60.404133061864314" />
-      <entry key="H2" value="111.52766488283302" />
-      <entry key="H4" value="154.86303095501694" />
-      <entry key="D1" value="205.73233683889623" />
-      <entry key="W1" value="216.19883711616984" />
+      <entry key="MS100" value="1.0" />
+      <entry key="MS500" value="1.0" />
+      <entry key="S2" value="1.0" />
+      <entry key="S5" value="1.0" />
+      <entry key="S10" value="1.0000000000000173" />
+      <entry key="S30" value="1.0000667858551753" />
+      <entry key="S60" value="1.0219273330971874" />
+      <entry key="M2" value="1.477734318964914" />
+      <entry key="M5" value="5.0049408037805625" />
+      <entry key="M10" value="10.142133371520291" />
+      <entry key="M15" value="13.29594143528011" />
+      <entry key="M30" value="18.713369180440647" />
+      <entry key="H1" value="33.706311737549754" />
+      <entry key="H2" value="74.22557671675243" />
+      <entry key="H4" value="128.84827646197763" />
+      <entry key="D1" value="216.90871065401865" />
+      <entry key="W1" value="238.2225687482557" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
-      <entry key="MS500" value="0.0" />
-      <entry key="S2" value="0.0" />
-      <entry key="S5" value="0.0" />
-      <entry key="S10" value="0.0" />
-      <entry key="S30" value="0.0" />
-      <entry key="S60" value="0.0" />
-      <entry key="M2" value="0.0" />
-      <entry key="M5" value="0.0" />
-      <entry key="M10" value="0.0" />
-      <entry key="M15" value="0.0" />
-      <entry key="M30" value="0.0" />
-      <entry key="H1" value="0.0" />
-      <entry key="H2" value="0.0" />
-      <entry key="H4" value="0.0" />
-      <entry key="D1" value="0.0" />
-      <entry key="W1" value="0.0" />
+      <entry key="MS500" value="1.3243176659582136E-290" />
+      <entry key="S2" value="3.703192529285136E-73" />
+      <entry key="S5" value="1.4483104240252068E-29" />
+      <entry key="S10" value="6.039022809083759E-15" />
+      <entry key="S30" value="5.271658540314081E-5" />
+      <entry key="S60" value="0.01998557673635143" />
+      <entry key="M2" value="0.44133779540034884" />
+      <entry key="M5" value="3.317093460752551" />
+      <entry key="M10" value="6.901245210664842" />
+      <entry key="M15" value="8.89283629936655" />
+      <entry key="M30" value="11.518394050762655" />
+      <entry key="H1" value="13.13535908081758" />
+      <entry key="H2" value="14.034307281652953" />
+      <entry key="H4" value="14.508487152970694" />
+      <entry key="D1" value="14.916848979129407" />
+      <entry key="W1" value="14.988090726471738" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.8950488491942271" />
-      <entry key="MS500" value="1.105694971444478" />
-      <entry key="S2" value="1.887255308350185" />
-      <entry key="S5" value="2.4283440421952647" />
-      <entry key="S10" value="2.6867880853753277" />
-      <entry key="S30" value="2.8887648327886586" />
-      <entry key="S60" value="2.94347799884731" />
-      <entry key="M2" value="2.9737936120971296" />
-      <entry key="M5" value="3.219285394304857" />
-      <entry key="M10" value="4.255348380563188" />
-      <entry key="M15" value="6.388159049472237" />
-      <entry key="M30" value="21.45617983041841" />
-      <entry key="H1" value="60.40385565017548" />
-      <entry key="H2" value="111.52741939281194" />
-      <entry key="H4" value="154.86286475126772" />
-      <entry key="D1" value="205.7323008436086" />
-      <entry key="W1" value="216.19883173314668" />
+      <entry key="MS100" value="0.0010612645141856033" />
+      <entry key="MS500" value="0.25419366832298906" />
+      <entry key="S2" value="0.7100536792717136" />
+      <entry key="S5" value="0.871999975753615" />
+      <entry key="S10" value="0.933809389411808" />
+      <entry key="S30" value="0.9775452402801202" />
+      <entry key="S60" value="1.0296112908562476" />
+      <entry key="M2" value="1.9029565810270321" />
+      <entry key="M5" value="8.288490723484454" />
+      <entry key="M10" value="17.009657051639813" />
+      <entry key="M15" value="22.15999468509402" />
+      <entry key="M30" value="30.21319709071666" />
+      <entry key="H1" value="46.831046726272376" />
+      <entry key="H2" value="88.2541298496796" />
+      <entry key="H4" value="143.35373586124962" />
+      <entry key="D1" value="231.82502658924201" />
+      <entry key="W1" value="253.210582478813" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -113,22 +103,24 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/pedro/ws-udemy/bistro/bistro&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "git-widget-placeholder": "master",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/home/pedro/ws-udemy/bistro/bistro",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.jshint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.jshint": "",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm"
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration default="true" type="JetRunConfigurationType">
       <method v="2">
@@ -169,5 +161,9 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="ajustes" />
+    <option name="LAST_COMMIT_MESSAGE" value="ajustes" />
   </component>
 </project>

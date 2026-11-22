@@ -2,8 +2,11 @@
 
 package bistro.reservations.model;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 public record ReservationCreated(
-        Long reservationId,
+        UUID reservationId,
         Integer partySize,
         LocalDateTime occurredAt
 ) {
