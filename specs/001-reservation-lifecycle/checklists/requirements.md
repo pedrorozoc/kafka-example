@@ -32,7 +32,7 @@
 ## Notes
 
 - Revisión final: 16 de 16 criterios satisfechos, sin aclaraciones pendientes.
-- Aclaración resuelta por el usuario: intervalos de duración fija de 90 minutos. FR-005 define la superposición y permite intervalos adyacentes; los escenarios 7 y 8 de la historia 1 cubren ambos resultados. Se incluye el cruce de medianoche como caso límite.
+- Revisión del 2026-11-22. FR-002 define una sola fecha y hora de llegada. FR-005 y FR-008 evalúan la disponibilidad para el mismo instante. Los escenarios 5, 7 y 8 de la historia 1 cubren instantes iguales, distintos y equivalentes con distintos desplazamientos respecto a UTC. La historia 2 verifica la conservación de las reservas existentes.
 - Se conservan los contratos HTTP porque el usuario los pidió expresamente; no son una decisión de implementación añadida.
 - Los criterios de éxito usan resultados funcionales en lugar de métricas de negocio, respetando la exclusión explícita del usuario.
 - Se revisó la constitución. Sus decisiones de implementación corresponden al plan; aquí se conservan las obligaciones observables sobre rutas, validación, errores uniformes e idioma.
