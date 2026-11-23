@@ -14,10 +14,12 @@ import java.util.List;
 @Service
 public class CreateReservationService {
     private final ReservationRepository reservations;
+    //Herramienta de spring para enviar a kafka
     private KafkaTemplate<String, ReservationCreated>  kafkaTemplate;
 
-    public CreateReservationService(ReservationRepository reservations) {
+    public CreateReservationService(ReservationRepository reservations,  KafkaTemplate<String, ReservationCreated> kafkaTemplate) {
         this.reservations = reservations;
+        this.kafkaTemplate = kafkaTemplate;
 
     }
 

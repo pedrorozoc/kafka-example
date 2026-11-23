@@ -8,9 +8,14 @@ Desde una copia del repositorio, usa JDK 25 y una base PostgreSQL 17. El Maven
 Wrapper descarga Maven 3.9.12 en la primera ejecución. Docker es necesario para
 ejecutar las pruebas con Testcontainers.
 
-Configura la conexión a una base existente con permisos para aplicar las
-migraciones. Este ejemplo usa las credenciales de la base desechable de la
-[guía de validación](specs/001-reservation-lifecycle/quickstart.md).
+Levanta PostgreSQL, pgAdmin y Kafka con `docker compose up -d`. Para levantar
+solo la base y pgAdmin, usa `docker compose up -d pgadmin`.
+
+Abre pgAdmin en <http://localhost:8082>, inicia sesión con `admin@bistro.dev`
+y `local_pgadmin`, y selecciona **Servers → Bistro local**. PostgreSQL escucha
+en `localhost:55432` y ambos servicios guardan sus datos en volúmenes de Docker.
+
+Configura la conexión de la API con las credenciales locales de PostgreSQL.
 
 ```bash
 export SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:55432/bistro
