@@ -5,22 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3b12ee5d-687a-4ada-9248-ec441db1de99" name="Changes" comment="ajustes">
-      <change afterPath="$PROJECT_DIR$/src/main/java/bistro/reservations/model/ReservationConfirmated.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/bistro/reservations/service/TableAssignedListener.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/bistro/tables/model/TableAssigned.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/specs/001-reservation-lifecycle/data-model.md" beforeDir="false" afterPath="$PROJECT_DIR$/specs/001-reservation-lifecycle/data-model.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/specs/001-reservation-lifecycle/quickstart.md" beforeDir="false" afterPath="$PROJECT_DIR$/specs/001-reservation-lifecycle/quickstart.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/specs/001-reservation-lifecycle/spec.md" beforeDir="false" afterPath="$PROJECT_DIR$/specs/001-reservation-lifecycle/spec.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/bistro/reservations/service/CreateReservationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bistro/reservations/service/CreateReservationService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/bistro/shared/config/KafkaTopicConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bistro/shared/config/KafkaTopicConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/bistro/tables/model/DiningTable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bistro/tables/model/DiningTable.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/bistro/tables/service/ReservationCreatedListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bistro/tables/service/ReservationCreatedListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/bistro/reservations/CreateReservationHttpTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/bistro/reservations/CreateReservationHttpTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/bistro/reservations/GetReservationStatusHttpTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/bistro/reservations/GetReservationStatusHttpTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/bistro/reservations/ReservationMigrationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/bistro/reservations/ReservationMigrationTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/bistro/reservations/ReservationTestDatabase.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/bistro/reservations/ReservationTestDatabase.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bistro/reservations/service/TableAssignedListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bistro/reservations/service/TableAssignedListener.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/java/bistro/reservations/ReservationTransactionHttpTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/bistro/reservations/ReservationTransactionHttpTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

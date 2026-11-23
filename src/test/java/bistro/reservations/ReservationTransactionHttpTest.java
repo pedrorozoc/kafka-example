@@ -15,7 +15,7 @@ import java.util.function.BooleanSupplier;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ReservationTransactionHttpTest extends ReservationTestDatabase {
-    
+
 
     @Test
     void rollsBackDatabaseFailureAndReleasesTheTableForTheNextRequest() {

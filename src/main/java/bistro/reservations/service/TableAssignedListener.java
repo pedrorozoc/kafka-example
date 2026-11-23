@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 public class TableAssignedListener {
     private final CreateReservationService createReservationService;
 
-    @KafkaListener(topics = "table-asigned" , groupId = "reservations")
+    @KafkaListener(topics = "table-assigned" , groupId = "reservations")
     public void onTableAssigned(TableAssigned event) {
         createReservationService.confirm(event.reservationId(),event.tableId(),event.tableNumber());
     }
