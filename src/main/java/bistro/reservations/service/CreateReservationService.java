@@ -1,8 +1,12 @@
 package bistro.reservations.service;
 
 import bistro.reservations.model.Reservation;
+import bistro.reservations.model.ReservationConfirmated;
 import bistro.reservations.model.ReservationCreated;
+import bistro.reservations.model.ReservationStatus;
 import bistro.reservations.repository.ReservationRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -10,18 +14,41 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
+@Transactional(readOnly=true)
+@Slf4j
 public class CreateReservationService {
     private final ReservationRepository reservations;
     //Herramienta de spring para enviar a kafka
-    private KafkaTemplate<String, ReservationCreated>  kafkaTemplate;
+    private final KafkaTemplate<String, Object>  kafkaTemplate;
 
-    public CreateReservationService(ReservationRepository reservations,  KafkaTemplate<String, ReservationCreated> kafkaTemplate) {
-        this.reservations = reservations;
-        this.kafkaTemplate = kafkaTemplate;
+    @Transactional
+    public void confirm(UUID reservationId, Long tableId, String tableNumber) {
+        Reservation reservation= reservations.findById(reservationId)
+                .orElseThrow(()-> new IllegalArgumentException(
+                        "Reserva no encontrada: "+ reservationId
+                ));
+        reservation.setStatus(ReservationStatus.CONFIRMED);
+        reservation.setAssignedTableId(tableId);
+        reservations.save(reservation);
+
+        log.info("Reserva {} confirmada con mesa {}", reservation.getId(),tableNumber);
+
+        ReservationConfirmated confirmated=new ReservationConfirmated(
+                reservationId,reservation.getCustomerEmail()
+                ,tableNumber,reservation.getReservationTime()
+                ,LocalDateTime.now()
+        );
+
+        kafkaTemplate.send("reservation-confirmated", String.valueOf(reservation.getId()), confirmated);
+
 
     }
+
+
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public Reservation create(String name, String email, LocalDateTime reservationTime, Integer partySize) {

@@ -22,7 +22,7 @@ Desde otra terminal, cargar una mesa de 12 plazas y definir las funciones de pru
 db() {
   docker exec -i bistro-reservation-check psql -U bistro -d bistro -v ON_ERROR_STOP=1 "$@"
 }
-db -c 'INSERT INTO dining_table (id, capacity) VALUES (1, 12)'
+db -c "INSERT INTO dining_table (id, table_number, capacity) VALUES (1, 'T-01', 12)"
 url=http://localhost:8080/api/v1/reservations
 post() {
   local body
@@ -93,6 +93,8 @@ jq -se '([.[].status] | sort) == ["CONFIRMED","REJECTED"] and ([.[].reservationC
 
 `ReservationMigrationTest` prepara una base con V1 a V3 y aplica V4 sobre esa misma base. Debe comprobar que dos confirmaciones históricas de la misma mesa, separadas por segundos, conservan sus códigos, estados, asignaciones y cantidades. Las dos ocupan el mismo minuto local y la mesa queda disponible para el minuto siguiente. La fixture incluye un cambio de fecha respecto de UTC y una reserva histórica de 13 personas. La prueba verifica que los datos y el esquema V3 se conservan si la migración falla ante una zona inválida, una fecha histórica no finita o una cantidad histórica que excede el rango de `integer`.
 
-La suite prueba números JSON de valor entero como `12.0` y `1.2e1`. También cubre la espera y el rollback de una transacción y comprueba que el enlace de `LocalDateTime` conserva el minuto con una zona JVM distinta, incluso para un minuto que coincida con un salto de horario de verano en esa zona. Las pruebas de integración usan Testcontainers o las variables `BISTRO_TEST_DATABASE_URL`, `BISTRO_TEST_DATABASE_USERNAME` y `BISTRO_TEST_DATABASE_PASSWORD` con una base exclusiva de pruebas. La prueba de migración aplica V3 y V4 en un esquema temporal. El usuario de la base de pruebas debe poder crear esquemas.
+`ReservationMigrationTest` también comprueba que V5 inicializa `table_number` en el catálogo existente, conserva las asignaciones y exige un número de mesa en las nuevas filas.
+
+La suite prueba números JSON de valor entero como `12.0` y `1.2e1`. También cubre la espera y el rollback de una transacción y comprueba que el enlace de `LocalDateTime` conserva el minuto con una zona JVM distinta, incluso para un minuto que coincida con un salto de horario de verano en esa zona. Las pruebas de integración usan Testcontainers o las variables `BISTRO_TEST_DATABASE_URL`, `BISTRO_TEST_DATABASE_USERNAME` y `BISTRO_TEST_DATABASE_PASSWORD` con una base exclusiva de pruebas. Las pruebas de migración usan esquemas temporales. El usuario de la base de pruebas debe poder crear esquemas.
 
 Detener el servicio con Ctrl+C en la primera terminal y liberar la base desechable con `docker stop bistro-reservation-check`. El [contrato HTTP](contracts/openapi.yaml) y el [modelo de datos](data-model.md) detallan los resultados esperados.

@@ -94,7 +94,7 @@ Estos endpoints forman parte del alcance explícito del usuario.
 ### Key Entities *(include if feature involves data)*
 
 - **Reservation**: Solicitud de un grupo para una visita al único restaurante. Contiene `reservationCode` (identificador público), `customerName`, `customerEmail`, `reservationTime`, `partySize`, `status` y `assignedTableId`. La mesa está presente en una reserva confirmada y ausente en una pendiente o rechazada.
-- **Mesa existente**: Recurso identificado por un id y una capacidad conocida, usado para evaluar disponibilidad y asignar reservas. Crear o editar mesas pertenece a otra feature.
+- **Mesa existente**: Recurso con un id, un número de mesa de texto obligatorio (`tableNumber`) y una capacidad conocida. Se usa para evaluar disponibilidad y asignar reservas. Crear o editar mesas pertenece a otra feature.
 
 ## Success Criteria *(mandatory)*
 

@@ -26,6 +26,9 @@ export SPRING_DATASOURCE_PASSWORD=local_bistro
 
 Al arrancar, Flyway aplica las migraciones y JPA valida el esquema. La API
 escucha en el puerto 8080. El catálogo se carga como dato preexistente.
+Cada mesa tiene un `table_number` obligatorio de hasta 255 caracteres, como
+`T-01`. La migración V5 inicializa el número de las mesas existentes con su
+`id` en texto y conserva las asignaciones de las reservas.
 
 El POST de reservas recibe la fecha y hora local a precisión de minuto, por
 ejemplo `2030-06-12T19:00`, y una cantidad entera de 1 a 12 comensales.
@@ -41,7 +44,7 @@ Exclusivamente en la base desechable de validación, ejecuta este SQL tras
 arrancar para cargar la mesa de cuatro plazas del ejemplo.
 
 ```sql
-INSERT INTO dining_table (id, capacity) VALUES (1, 4);
+INSERT INTO dining_table (id, table_number, capacity) VALUES (1, 'T-01', 4);
 ```
 
 Ejecuta `./mvnw verify` para probar la API con PostgreSQL 17 y construir el JAR.

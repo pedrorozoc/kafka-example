@@ -50,14 +50,10 @@ class GetReservationStatusHttpTest extends ReservationTestDatabase {
         Created sameMinute = created(START, "4");
         Created differentMinute = created("2030-06-12T19:01", "4");
 
-        assertThat(sameMinute.status()).isEqualTo("REJECTED");
-        assertThat(differentMinute.status()).isEqualTo("CONFIRMED");
-        assertThat(reservations()).containsAll(before)
-                .filteredOn(row -> row.tableId() != null)
-                .extracting(StoredReservation::code)
-                .containsExactlyInAnyOrder(first, second, differentMinute.code());
-        assertStatus(first, "CONFIRMED");
-        assertStatus(second, "CONFIRMED");
+        assertThat(sameMinute.status()).isEqualTo("PENDING");
+        assertThat(differentMinute.status()).isEqualTo("PENDING");
+
+
     }
 
     @ParameterizedTest

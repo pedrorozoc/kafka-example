@@ -20,7 +20,7 @@ La escritura y la lectura de `reservation_time`, incluido el parámetro de búsq
 
 ## Mesa y disponibilidad por minuto
 
-El módulo `tables` es dueño de `dining_table`. La mesa tiene un `id` de tipo `bigint` y una `capacity` de tipo `integer` positivo. Cada reserva confirmada ocupa una mesa en su fecha y minuto local. Una mesa puede atender reservas en minutos distintos.
+El módulo `tables` es dueño de `dining_table`. La mesa tiene un `id` de tipo `bigint`, un `tableNumber` obligatorio que se guarda en `table_number` (`varchar(255)`) y una `capacity` de tipo `integer` positivo. La migración V5 asigna a cada mesa existente su `id` convertido a texto como número inicial. Las reservas siguen referenciando `dining_table.id`. Cada reserva confirmada ocupa una mesa en su fecha y minuto local. Una mesa puede atender reservas en minutos distintos.
 
 1. El servicio crea la reserva en `PENDING` y abre la asignación bajo `READ COMMITTED`.
 2. `TableCatalog.lockCandidates(int partySize)` obtiene las mesas suficientes y bloquea sus filas por ID ascendente, dentro de la misma transacción.

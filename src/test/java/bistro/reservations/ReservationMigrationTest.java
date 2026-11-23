@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
@@ -61,6 +62,25 @@ class ReservationMigrationTest {
                 SELECT indexdef FROM pg_indexes
                 WHERE schemaname = ? AND indexname = 'reservation_occupied_table_time_idx'
                 """, String.class, schema)).contains("(assigned_table_id, reservation_time)", "WHERE").doesNotContain("UNIQUE");
+    }
+
+    @Test
+    void backfillsTableNumbersAndPreservesHistoricalAssignments() {
+        UUID reservationCode = legacyReservation("2030-06-13T00:00:10Z", "4", "");
+        flyway("4", "America/Bogota").migrate();
+
+        flyway("5", "America/Bogota").migrate();
+
+        assertThat(sql.queryForObject("""
+                SELECT t.table_number FROM reservation r
+                JOIN dining_table t ON t.id = r.assigned_table_id
+                WHERE r.reservation_code = ?
+                """, String.class, reservationCode)).isEqualTo("1");
+        sql.update("INSERT INTO dining_table (id, table_number, capacity) VALUES (2, 'T-02', 4)");
+        assertThat(sql.queryForObject("SELECT table_number FROM dining_table WHERE id = 2", String.class))
+                .isEqualTo("T-02");
+        assertThatThrownBy(() -> sql.update("INSERT INTO dining_table (id, capacity) VALUES (3, 4)"))
+                .isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @ParameterizedTest

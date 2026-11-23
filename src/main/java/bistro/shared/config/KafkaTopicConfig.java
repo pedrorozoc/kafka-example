@@ -14,4 +14,20 @@ public class KafkaTopicConfig {
                 .replicas(1)
                 .build();
     }
+
+    @Bean
+    public NewTopic tableAssignedTopic() {
+        return TopicBuilder.name("table-assigned")
+                .partitions(3)
+                .replicas(1)
+                .build();
+    }
+
+    @Bean
+    public NewTopic reservationConfirmedTopic() {
+        return TopicBuilder.name("table-confirmed")
+                .partitions(3)
+                .replicas(1)
+                .build();
+    }
 }

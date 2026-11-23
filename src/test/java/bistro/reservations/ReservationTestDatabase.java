@@ -75,7 +75,8 @@ abstract class ReservationTestDatabase {
     }
 
     void table(long id, int capacity) {
-        sql.update("INSERT INTO dining_table (id, capacity) VALUES (?, ?)", id, capacity);
+        sql.update("INSERT INTO dining_table (id, table_number, capacity) VALUES (?, ?, ?)",
+                id, "M-" + id, capacity);
     }
 
     UUID seed(String status, Long tableId) {
