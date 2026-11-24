@@ -1,9 +1,6 @@
 package bistro.reservations.service;
 
-import bistro.reservations.model.Reservation;
-import bistro.reservations.model.ReservationConfirmated;
-import bistro.reservations.model.ReservationCreated;
-import bistro.reservations.model.ReservationStatus;
+import bistro.reservations.model.*;
 import bistro.reservations.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -66,6 +63,21 @@ public class CreateReservationService {
         //Enviar el evento al tópico y con el key que corresponde
         kafkaTemplate.send("reservation-created",String.valueOf(saved.getId()),event);
         return saved;
+    }
+
+    @Transactional
+    public void reject(UUID reservationId, String reason) {
+        Reservation reservation=reservations.findById(reservationId)
+                .orElseThrow(()-> new IllegalArgumentException("Reserva no encontrada: " + reservationId));
+        reservation.setStatus(ReservationStatus.REJECTED);
+        reservations.save(reservation);
+        log.info("Reserva {} rejecida con mesa {}", reservation.getId(), reason);
+        ReservationRejected event = new ReservationRejected(
+                reservationId,reservation.getCustomerEmail(),
+                reason,
+                LocalDateTime.now()
+        );
+        kafkaTemplate.send("reservation-rejected", String.valueOf(reservation.getId()), event);
     }
 
     private void resolve(Reservation reservation, List<Long> candidates) {

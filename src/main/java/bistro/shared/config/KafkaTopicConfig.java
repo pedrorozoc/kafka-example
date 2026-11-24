@@ -30,4 +30,21 @@ public class KafkaTopicConfig {
                 .replicas(1)
                 .build();
     }
+
+    @Bean
+    public NewTopic tableUnavailableTopic() {
+        return TopicBuilder.name("table-unavailable")
+                .partitions(3)
+                .replicas(1)
+                .build();
+    }
+
+    @Bean
+    public NewTopic reservationRejectedTopic() {
+        return TopicBuilder.name("reservation-rejected")
+                .partitions(3)
+                .replicas(1)
+                .build();
+    }
+
 }
