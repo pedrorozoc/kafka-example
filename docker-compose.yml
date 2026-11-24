@@ -86,6 +86,13 @@ services:
       KAFKA_CLUSTERS_0_NAME: bistro-local
       # La UI se conecta al broker por la red interna de Compose.
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: bistro-mailpit
+    ports:
+      - "1025:1025"   # SMTP (por acá le mandamos)
+      - "8025:8025"   # UI web (por acá los vemo
+
 
 volumes:
   postgres-data:
@@ -113,3 +120,4 @@ configs:
   pgadmin-pgpass:
     content: |
       postgres:5432:*:bistro:local_bistro
+
