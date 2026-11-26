@@ -40,7 +40,7 @@ public class CreateReservationService {
                 ,LocalDateTime.now()
         );
 
-        kafkaTemplate.send("reservation-confirmated", String.valueOf(reservation.getId()), confirmated);
+        kafkaTemplate.send("reservation-confirmed", String.valueOf(reservation.getId()), confirmated);
 
 
     }

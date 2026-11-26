@@ -40,6 +40,14 @@ public class KafkaTopicConfig {
     }
 
     @Bean
+    public NewTopic reservationConfirmed() {
+        return TopicBuilder.name("reservation-confirmed")
+                .partitions(3)
+                .replicas(1)
+                .build();
+    }
+
+    @Bean
     public NewTopic reservationRejectedTopic() {
         return TopicBuilder.name("reservation-rejected")
                 .partitions(3)

@@ -1,9 +1,12 @@
 package bistro.reservations;
 
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import tools.jackson.databind.node.ObjectNode;
 
 import java.time.LocalDateTime;
@@ -12,7 +15,9 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-
+//@SpringBootTest
+//@ActiveProfiles("test")
+//@Transactional
 class CreateReservationHttpTest extends ReservationTestDatabase {
     private static final String INVALID_JSON =
             "Se requiere un cuerpo JSON válido con los tipos y formatos esperados.";
