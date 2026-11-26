@@ -17,8 +17,31 @@
         <java.version>25</java.version>
         <mapstruct.version>1.6.3</mapstruct.version>
     </properties>
-
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.modulith</groupId>
+                <artifactId>spring-modulith-bom</artifactId>
+                <version>2.1.2</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <dependencies>
+        <!--agrego las dependencias de spring modulith-->
+        <!-- Source: https://mvnrepository.com/artifact/org.springframework.modulith/spring-modulith-starter-core -->
+        <dependency>
+            <groupId>org.springframework.modulith</groupId>
+            <artifactId>spring-modulith-starter-core</artifactId>
+
+        </dependency>
+        <!-- Source: https://mvnrepository.com/artifact/org.springframework.modulith/spring-modulith-starter-test -->
+        <dependency>
+            <groupId>org.springframework.modulith</groupId>
+            <artifactId>spring-modulith-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webmvc</artifactId>

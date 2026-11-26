@@ -1,4 +1,4 @@
-package bistro.reservations.model;
+package bistro.reservations.events;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

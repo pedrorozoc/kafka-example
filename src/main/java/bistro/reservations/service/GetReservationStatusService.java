@@ -1,5 +1,6 @@
 package bistro.reservations.service;
 
+import bistro.reservations.ReservationNotFoundException;
 import bistro.reservations.model.Reservation;
 import bistro.reservations.model.ReservationStatus;
 import bistro.reservations.repository.ReservationRepository;

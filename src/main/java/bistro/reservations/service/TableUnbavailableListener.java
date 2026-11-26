@@ -1,6 +1,6 @@
 package bistro.reservations.service;
 
-import bistro.tables.model.TableUnavailable;
+import bistro.tables.events.TableUnavailable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;

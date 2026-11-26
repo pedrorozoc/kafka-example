@@ -1,4 +1,4 @@
-package bistro.tables.model;
+package bistro.tables.events;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

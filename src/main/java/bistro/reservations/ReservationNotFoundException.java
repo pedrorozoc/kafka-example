@@ -1,4 +1,4 @@
-package bistro.reservations.service;
+package bistro.reservations;
 
 public class ReservationNotFoundException extends RuntimeException {
     public ReservationNotFoundException() {

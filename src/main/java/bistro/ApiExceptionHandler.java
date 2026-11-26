@@ -1,6 +1,6 @@
 package bistro;
 
-import bistro.reservations.service.ReservationNotFoundException;
+import bistro.reservations.ReservationNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;

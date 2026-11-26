@@ -5,8 +5,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3b12ee5d-687a-4ada-9248-ec441db1de99" name="Changes" comment="ajustes">
+      <change afterPath="$PROJECT_DIR$/src/main/java/bistro/reservations/events/package-info.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/bistro/tables/events/package-info.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/bistro/ModularityTests.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bistro/notifications/service/NotificationListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bistro/notifications/service/NotificationListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bistro/reservations/model/ReservationConfirmated.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bistro/reservations/events/ReservationConfirmated.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bistro/reservations/model/ReservationCreated.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bistro/reservations/events/ReservationCreated.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bistro/reservations/model/ReservationRejected.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bistro/reservations/events/ReservationRejected.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bistro/reservations/service/CreateReservationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bistro/reservations/service/CreateReservationService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bistro/reservations/service/TableAssignedListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bistro/reservations/service/TableAssignedListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bistro/reservations/service/TableUnbavailableListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bistro/reservations/service/TableUnbavailableListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bistro/tables/model/TableAssigned.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bistro/tables/events/TableAssigned.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bistro/tables/model/TableUnavailable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bistro/tables/events/TableUnavailable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bistro/tables/service/ReservationCreatedListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bistro/tables/service/ReservationCreatedListener.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -18,6 +31,8 @@
       <list>
         <option value="Record" />
         <option value="Class" />
+        <option value="module-info" />
+        <option value="package-info" />
       </list>
     </option>
   </component>
@@ -33,61 +48,61 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.0" />
-      <entry key="MS500" value="1.0" />
-      <entry key="S2" value="1.0000000000045464" />
-      <entry key="S5" value="1.0000451685644747" />
-      <entry key="S10" value="1.0151046140219189" />
-      <entry key="S30" value="1.9370055135424957" />
-      <entry key="S60" value="3.720633560480548" />
-      <entry key="M2" value="5.679056538103894" />
-      <entry key="M5" value="7.656526399198199" />
-      <entry key="M10" value="8.642123011024289" />
-      <entry key="M15" value="9.041559346800085" />
-      <entry key="M30" value="9.49722459218364" />
-      <entry key="H1" value="10.093932949091714" />
-      <entry key="H2" value="15.86110279648801" />
-      <entry key="H4" value="40.8713357869078" />
-      <entry key="D1" value="248.86936280194476" />
-      <entry key="W1" value="444.5225514821998" />
+      <entry key="MS100" value="1.2260235207918046E-28" />
+      <entry key="MS500" value="2.6163796838938024E-6" />
+      <entry key="S2" value="0.042851208109667145" />
+      <entry key="S5" value="0.41737600495262955" />
+      <entry key="S10" value="1.0565720888974408" />
+      <entry key="S30" value="2.092345607810981" />
+      <entry key="S60" value="2.5016566935468276" />
+      <entry key="M2" value="2.738512490860141" />
+      <entry key="M5" value="2.892282257400653" />
+      <entry key="M10" value="2.9475403016248163" />
+      <entry key="M15" value="3.0249576220180585" />
+      <entry key="M30" value="4.997246910723547" />
+      <entry key="H1" value="14.913240378620554" />
+      <entry key="H2" value="34.0309802794504" />
+      <entry key="H4" value="65.91061340719105" />
+      <entry key="D1" value="286.3083821411549" />
+      <entry key="W1" value="503.4375613338601" />
     </decayedCancelled>
     <decayedSelected>
-      <entry key="MS100" value="0.0" />
-      <entry key="MS500" value="0.0" />
-      <entry key="S2" value="0.0" />
-      <entry key="S5" value="0.0" />
-      <entry key="S10" value="0.0" />
-      <entry key="S30" value="1.602832176245204E-151" />
-      <entry key="S60" value="5.654028196838156E-76" />
-      <entry key="M2" value="3.3615792519763546E-38" />
-      <entry key="M5" value="1.553099091603215E-15" />
-      <entry key="M10" value="5.573253624828947E-8" />
-      <entry key="M15" value="1.8386372069847662E-5" />
-      <entry key="M30" value="0.006480436613179428" />
-      <entry key="H1" value="0.27990935389297844" />
-      <entry key="H2" value="4.48384801203564" />
-      <entry key="H4" value="23.18181767704352" />
-      <entry key="D1" value="127.84162211673916" />
-      <entry key="W1" value="189.95543415078953" />
+      <entry key="MS100" value="1.0000000000000357" />
+      <entry key="MS500" value="1.0020445527436026" />
+      <entry key="S2" value="1.2187717866905856" />
+      <entry key="S5" value="1.6686521268833738" />
+      <entry key="S10" value="2.094701527726532" />
+      <entry key="S30" value="2.6139629915849536" />
+      <entry key="S60" value="2.7935199046745782" />
+      <entry key="M2" value="2.8931221012681956" />
+      <entry key="M5" value="2.956338251142051" />
+      <entry key="M10" value="2.978893538429296" />
+      <entry key="M15" value="3.011105586115238" />
+      <entry key="M30" value="3.7583881750373167" />
+      <entry key="H1" value="7.210770690595702" />
+      <entry key="H2" value="14.128969618127305" />
+      <entry key="H4" value="30.586443667494844" />
+      <entry key="D1" value="139.85953051004367" />
+      <entry key="W1" value="212.97343998952107" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="1.6511791564356366E-7" />
-      <entry key="MS500" value="0.04401075709100253" />
-      <entry key="S2" value="0.45802555526889915" />
-      <entry key="S5" value="0.731778086240723" />
-      <entry key="S10" value="0.8698065648292062" />
-      <entry key="S30" value="1.8751878920556635" />
-      <entry key="S60" value="3.6801541579939827" />
-      <entry key="M2" value="5.65401417825796" />
-      <entry key="M5" value="7.644803553341588" />
-      <entry key="M10" value="8.635911784857246" />
-      <entry key="M15" value="9.037352928096915" />
-      <entry key="M30" value="9.501532511757222" />
-      <entry key="H1" value="10.372483868423954" />
-      <entry key="H2" value="20.342647507401413" />
-      <entry key="H4" value="64.04856742523769" />
-      <entry key="D1" value="376.7068909199848" />
-      <entry key="W1" value="634.477102978776" />
+      <entry key="MS100" value="3.964099936778953E-14" />
+      <entry key="MS500" value="0.002130851388544259" />
+      <entry key="S2" value="0.30508287633664255" />
+      <entry key="S5" value="1.2468009349676792" />
+      <entry key="S10" value="2.4941682578723277" />
+      <entry key="S30" value="4.384965051380324" />
+      <entry key="S60" value="5.116264739115952" />
+      <entry key="M2" value="5.537067525402038" />
+      <entry key="M5" value="5.8094887912187305" />
+      <entry key="M10" value="5.906637999970096" />
+      <entry key="M15" value="6.022705342450492" />
+      <entry key="M30" value="8.747224799319346" />
+      <entry key="H1" value="22.115700846817727" />
+      <entry key="H2" value="48.15186253037295" />
+      <entry key="H4" value="96.48932201771443" />
+      <entry key="D1" value="426.16302357254193" />
+      <entry key="W1" value="716.4099515669615" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -99,35 +114,42 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;JUnit.CreateReservationHttpTest.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.CreateReservationHttpTest.reusesTheSameTableAtADifferentMinute.[2] nextStart = \&quot;2030-06-13T19:00\&quot;.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.CreateReservationHttpTest.reusesTheSameTableAtADifferentMinute.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.GetReservationStatusHttpTest.executor&quot;: &quot;Run&quot;,
-    &quot;Maven.bistro [compile].executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/pedro/ws-udemy/bistro/bistro&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.jshint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.jshint&quot;: &quot;&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "JUnit.CreateReservationHttpTest.executor": "Run",
+    "JUnit.CreateReservationHttpTest.reusesTheSameTableAtADifferentMinute.[2] nextStart = \"2030-06-13T19:00\".executor": "Run",
+    "JUnit.CreateReservationHttpTest.reusesTheSameTableAtADifferentMinute.executor": "Run",
+    "JUnit.GetReservationStatusHttpTest.executor": "Run",
+    "JUnit.ModularityTests.executor": "Run",
+    "Maven.bistro [clean].executor": "Run",
+    "Maven.bistro [compile].executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "git-widget-placeholder": "master",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/home/pedro/ws-udemy/bistro/bistro",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.jshint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.jshint": "",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm"
   }
-}</component>
-  <component name="RunManager" selected="JUnit.GetReservationStatusHttpTest">
+}]]></component>
+  <component name="RecentsManager">
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="bistro" />
+    </key>
+  </component>
+  <component name="RunManager" selected="JUnit.ModularityTests">
     <configuration name="CreateReservationHttpTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="bistro" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="bistro.reservations.*" />
+          <option name="PATTERN" value="bistro.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -142,7 +164,7 @@
       <module name="bistro" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="bistro.reservations.*" />
+          <option name="PATTERN" value="bistro.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -157,11 +179,41 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="CreateReservationHttpTest.reusesTheSameTableAtADifferentMinute.[2] nextStart = &quot;2030-06-13T19:00&quot;" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="GetReservationStatusHttpTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="bistro" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="bistro.reservations.*" />
+          <option name="PATTERN" value="bistro.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="bistro.reservations" />
+      <option name="MAIN_CLASS_NAME" value="bistro.reservations.GetReservationStatusHttpTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ModularityTests" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="bistro" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="bistro.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="bistro" />
+      <option name="MAIN_CLASS_NAME" value="bistro.ModularityTests" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="[engine:junit-jupiter]/[class:bistro.reservations.CreateReservationHttpTest]/[test-template:reusesTheSameTableAtADifferentMinute(java.lang.String)]/[test-template-invocation:#2]" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="bistro" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="bistro.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -171,21 +223,6 @@
       <uniqueIds>
         <uniqueId value="[engine:junit-jupiter]/[class:bistro.reservations.CreateReservationHttpTest]/[test-template:reusesTheSameTableAtADifferentMinute(java.lang.String)]/[test-template-invocation:#2]" />
       </uniqueIds>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="GetReservationStatusHttpTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="bistro" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="bistro.reservations.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="bistro.reservations" />
-      <option name="MAIN_CLASS_NAME" value="bistro.reservations.GetReservationStatusHttpTest" />
-      <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -208,10 +245,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.ModularityTests" />
         <item itemvalue="JUnit.GetReservationStatusHttpTest" />
         <item itemvalue="JUnit.CreateReservationHttpTest" />
         <item itemvalue="JUnit.CreateReservationHttpTest.reusesTheSameTableAtADifferentMinute" />
-        <item itemvalue="JUnit.CreateReservationHttpTest.reusesTheSameTableAtADifferentMinute.[2] nextStart = &quot;2030-06-13T19:00&quot;" />
+        <item itemvalue="JUnit.[engine:junit-jupiter]/[class:bistro.reservations.CreateReservationHttpTest]/[test-template:reusesTheSameTableAtADifferentMinute(java.lang.String)]/[test-template-invocation:#2]" />
       </list>
     </recent_temporary>
   </component>

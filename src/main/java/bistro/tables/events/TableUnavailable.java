@@ -1,11 +1,10 @@
-package bistro.reservations.model;
+package bistro.tables.events;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public record ReservationRejected(
+public record TableUnavailable(
         UUID reservationId,
-        String customerEmail,
         String reason,
         LocalDateTime occuredAt
 ) {

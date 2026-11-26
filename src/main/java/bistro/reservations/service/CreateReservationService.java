@@ -1,5 +1,8 @@
 package bistro.reservations.service;
 
+import bistro.reservations.events.ReservationConfirmated;
+import bistro.reservations.events.ReservationCreated;
+import bistro.reservations.events.ReservationRejected;
 import bistro.reservations.model.*;
 import bistro.reservations.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;

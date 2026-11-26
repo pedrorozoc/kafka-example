@@ -1,7 +1,7 @@
 package bistro.notifications.service;
 
-import bistro.reservations.model.ReservationConfirmated;
-import bistro.reservations.model.ReservationRejected;
+import bistro.reservations.events.ReservationConfirmated;
+import bistro.reservations.events.ReservationRejected;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
