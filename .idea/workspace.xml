@@ -5,23 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3b12ee5d-687a-4ada-9248-ec441db1de99" name="Changes" comment="ajustes">
-      <change afterPath="$PROJECT_DIR$/src/main/java/bistro/notifications/service/NotificationListener.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/bistro/notifications/service/NotificationService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/data_pg.sql" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.specify/init-options.json" beforeDir="false" afterPath="$PROJECT_DIR$/.specify/init-options.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.specify/integration.json" beforeDir="false" afterPath="$PROJECT_DIR$/.specify/integration.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.specify/integrations/speckit.manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/.specify/integrations/speckit.manifest.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.specify/scripts/bash/check-prerequisites.sh" beforeDir="false" afterPath="$PROJECT_DIR$/.specify/scripts/bash/check-prerequisites.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.specify/scripts/bash/common.sh" beforeDir="false" afterPath="$PROJECT_DIR$/.specify/scripts/bash/common.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.specify/scripts/bash/setup-tasks.sh" beforeDir="false" afterPath="$PROJECT_DIR$/.specify/scripts/bash/setup-tasks.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.specify/templates/checklist-template.md" beforeDir="false" afterPath="$PROJECT_DIR$/.specify/templates/checklist-template.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.specify/templates/plan-template.md" beforeDir="false" afterPath="$PROJECT_DIR$/.specify/templates/plan-template.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.specify/templates/tasks-template.md" beforeDir="false" afterPath="$PROJECT_DIR$/.specify/templates/tasks-template.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/bistro/reservations/service/CreateReservationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bistro/reservations/service/CreateReservationService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/bistro/shared/config/KafkaTopicConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bistro/shared/config/KafkaTopicConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/bistro/reservations/CreateReservationHttpTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/bistro/reservations/CreateReservationHttpTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

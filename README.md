@@ -49,4 +49,10 @@ INSERT INTO dining_table (id, table_number, capacity) VALUES (1, 'T-01', 4);
 
 Ejecuta `./mvnw verify` para probar la API con PostgreSQL 17 y construir el JAR.
 El artefacto ejecutable queda en `target/bistro-0.0.1-SNAPSHOT.jar`. Se puede
-arrancar con `java -jar target/bistro-0.0.1-SNAPSHOT.jar` y las mismas variables.
+arrancar con:
+```SPRING_PROFILES_ACTIVE=prod \
+MAIL_HOST=localhost \
+MAIL_PORT=1025 \
+java -jar target/bistro-0.0.1-SNAPSHOT.jar
+```
+y las mismas variables.
